@@ -152,7 +152,7 @@
                                     <%= expense.category %>
                                 </span>
                             </td>
-                            <td class="amount"><%= expense.amount %></td>
+                            <td class="amount"><%= new Intl.NumberFormat('vi-VN').format(expense.amount) %> VND</td>
                         </tr>
                     <% }); %>
                 </tbody>

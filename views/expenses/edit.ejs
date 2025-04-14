@@ -1,46 +1,67 @@
 <div class="card">
     <div class="card-header">
-        <h2><i class="fas fa-edit"></i> Chỉnh sửa chi tiêu</h2>
+        <h2><i class="fas fa-edit"></i> Edit Expense</h2>
     </div>
 
     <form action="/expenses/<%= expense.id %>?_method=PUT" method="POST" class="expense-form">
         <div class="form-group">
-            <label for="description"><i class="fas fa-edit"></i> Mô tả:</label>
-            <input type="text" id="description" name="description" value="<%= expense.description %>" placeholder="Nhập mô tả chi tiêu" required autocomplete="off">
+            <label for="description"><i class="fas fa-edit"></i> Description:</label>
+            <input type="text" id="description" name="description" value="<%= expense.description %>" placeholder="Enter expense description" required autocomplete="off">
         </div>
 
         <div class="form-group">
-            <label for="amount"><i class="fas fa-money-bill-wave"></i> Số tiền (VND):</label>
-            <input type="number" id="amount" name="amount" step="1000" min="0" value="<%= expense.amount %>" placeholder="Nhập số tiền" required>
+            <label for="amount"><i class="fas fa-money-bill-wave"></i> Amount (VND):</label>
+            <input type="number" id="amount" name="amount" step="1000" min="0" value="<%= expense.amount %>" placeholder="Enter amount" required>
             <span id="formatted-amount"><%= new Intl.NumberFormat('vi-VN').format(expense.amount) %> VND</span>
         </div>
 
         <div class="form-group">
-            <label for="category"><i class="fas fa-tag"></i> Danh mục:</label>
+            <label for="category"><i class="fas fa-tag"></i> Category:</label>
             <select id="category" name="category">
-                <option value="Ăn uống" <%= expense.category === 'Ăn uống' ? 'selected' : '' %>>🍕 Ăn uống</option>
-                <option value="Di chuyển" <%= expense.category === 'Di chuyển' ? 'selected' : '' %>>🚗 Di chuyển</option>
-                <option value="Mua sắm" <%= expense.category === 'Mua sắm' ? 'selected' : '' %>>🛒 Mua sắm</option>
-                <option value="Hóa đơn" <%= expense.category === 'Hóa đơn' ? 'selected' : '' %>>📄 Hóa đơn</option>
-                <option value="Giải trí" <%= expense.category === 'Giải trí' ? 'selected' : '' %>>🎮 Giải trí</option>
-                <option value="Khác" <%= expense.category === 'Khác' ? 'selected' : '' %>>📌 Khác</option>
+                <option value="Food" <%= expense.category === 'Food' ? 'selected' : '' %>>🍕 Food</option>
+                <option value="Transportation" <%= expense.category === 'Transportation' ? 'selected' : '' %>>🚗 Transportation</option>
+                <option value="Shopping" <%= expense.category === 'Shopping' ? 'selected' : '' %>>🛒 Shopping</option>
+                <option value="Bills" <%= expense.category === 'Bills' ? 'selected' : '' %>>📄 Bills</option>
+                <option value="Entertainment" <%= expense.category === 'Entertainment' ? 'selected' : '' %>>🎮 Entertainment</option>
+                <option value="Other" <%= expense.category === 'Other' ? 'selected' : '' %>>📌 Other</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label for="date"><i class="far fa-calendar-alt"></i> Ngày:</label>
-            <input type="date" id="date" name="date" value="<%= expense.date.toISOString().split('T')[0] %>" required>
+            <label for="date"><i class="far fa-calendar-alt"></i> Date:</label>
+            <input type="date" id="date" name="date" required>
+            <input type="hidden" id="server-date" value="<%= expense.date.toISOString() %>">
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Cập nhật</button>
-            <a href="/" class="btn"><i class="fas fa-times"></i> Hủy</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update</button>
+            <a href="/expenses" class="btn"><i class="fas fa-times"></i> Cancel</a>
         </div>
     </form>
 </div>
 
 <script>
-    // Hiệu ứng focus cho input
+    // Set date from server but adjusted to client's timezone
+    const serverDate = document.getElementById('server-date')?.value;
+    if (serverDate) {
+        const date = new Date(serverDate);
+        const localDateString = date.toISOString().split('T')[0];
+        
+        // Set date value immediately
+        if (document.getElementById('date')) {
+            document.getElementById('date').value = localDateString;
+        }
+    }
+    
+    // Also set when DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        const serverDate = document.getElementById('server-date').value;
+        const date = new Date(serverDate);
+        const localDateString = date.toISOString().split('T')[0];
+        document.getElementById('date').value = localDateString;
+    });
+
+    // Input focus effect
     document.querySelectorAll('input, select').forEach(input => {
         input.addEventListener('focus', () => {
             input.parentElement.classList.add('focused');
@@ -51,7 +72,7 @@
         });
     });
 
-    // Format số tiền khi nhập
+    // Format amount when typing
     const amountInput = document.getElementById('amount');
     amountInput.addEventListener('input', function() {
         const value = this.value.replace(/,/g, '');

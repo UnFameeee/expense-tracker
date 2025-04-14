@@ -63,13 +63,14 @@
 
         // Format currency amounts
         document.querySelectorAll('.amount').forEach(element => {
-            const amount = parseFloat(element.textContent);
+            const text = element.textContent.trim();
+            // Skip if already formatted with VND
+            if (text.includes('VND')) {
+                return;
+            }
+            const amount = parseFloat(text);
             if (!isNaN(amount)) {
-                element.textContent = new Intl.NumberFormat('en-US', { 
-                    style: 'currency', 
-                    currency: 'USD',
-                    minimumFractionDigits: 2
-                }).format(amount);
+                element.textContent = new Intl.NumberFormat('vi-VN').format(amount) + ' VND';
             }
         });
         

@@ -4,8 +4,8 @@
             <i class="fas fa-chart-line"></i>
         </div>
         <div class="info">
-            <h3><%= total %> VND</h3>
-            <p>Tổng chi tiêu</p>
+            <h3><%= new Intl.NumberFormat('vi-VN').format(total) %> VND</h3>
+            <p>Total Expenses</p>
         </div>
     </div>
     <% if (expenses.length > 0) { %>
@@ -14,8 +14,8 @@
                 <i class="fas fa-receipt"></i>
             </div>
             <div class="info">
-                <h3><%= expenses.length %></h3>
-                <p>Số khoản chi tiêu</p>
+                <h3><%= new Intl.NumberFormat('vi-VN').format(expenses.length) %></h3>
+                <p>Number of Expenses</p>
             </div>
         </div>
         <div class="summary-card">
@@ -24,7 +24,7 @@
             </div>
             <div class="info">
                 <h3><%= new Date().toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' }) %></h3>
-                <p>Tháng hiện tại</p>
+                <p>Current Month</p>
             </div>
         </div>
     <% } %>
@@ -32,9 +32,9 @@
 
 <div class="card">
     <div class="card-header">
-        <h2><i class="fas fa-list"></i> Danh sách chi tiêu</h2>
+        <h2><i class="fas fa-list"></i> Expense List</h2>
         <div>
-            <a href="/expenses/new" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Thêm mới</a>
+            <a href="/expenses/new" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add New</a>
         </div>
     </div>
 
@@ -42,11 +42,11 @@
         <table class="expense-table">
             <thead>
                 <tr>
-                    <th><i class="far fa-calendar-alt"></i> Ngày</th>
-                    <th><i class="fas fa-align-left"></i> Mô tả</th>
-                    <th><i class="fas fa-tag"></i> Danh mục</th>
-                    <th><i class="fas fa-money-bill-wave"></i> Số tiền</th>
-                    <th><i class="fas fa-cogs"></i> Hành động</th>
+                    <th><i class="far fa-calendar-alt"></i> Date</th>
+                    <th><i class="fas fa-align-left"></i> Description</th>
+                    <th><i class="fas fa-tag"></i> Category</th>
+                    <th><i class="fas fa-money-bill-wave"></i> Amount</th>
+                    <th><i class="fas fa-cogs"></i> Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,27 +56,41 @@
                         <td><%= expense.description %></td>
                         <td>
                             <span class="category-badge">
-                                <% if (expense.category === 'Ăn uống') { %>
+                                <% if (expense.category === 'Food' || expense.category === 'Ăn uống') { %>
                                     🍕
-                                <% } else if (expense.category === 'Di chuyển') { %>
+                                <% } else if (expense.category === 'Transportation' || expense.category === 'Di chuyển') { %>
                                     🚗
-                                <% } else if (expense.category === 'Mua sắm') { %>
+                                <% } else if (expense.category === 'Shopping' || expense.category === 'Mua sắm') { %>
                                     🛒
-                                <% } else if (expense.category === 'Hóa đơn') { %>
+                                <% } else if (expense.category === 'Bills' || expense.category === 'Hóa đơn') { %>
                                     📄
-                                <% } else if (expense.category === 'Giải trí') { %>
+                                <% } else if (expense.category === 'Entertainment' || expense.category === 'Giải trí') { %>
                                     🎮
                                 <% } else { %>
                                     📌
                                 <% } %>
-                                <%= expense.category %>
+                                <% if (expense.category === 'Ăn uống') { %>
+                                    Food
+                                <% } else if (expense.category === 'Di chuyển') { %>
+                                    Transportation
+                                <% } else if (expense.category === 'Mua sắm') { %>
+                                    Shopping
+                                <% } else if (expense.category === 'Hóa đơn') { %>
+                                    Bills
+                                <% } else if (expense.category === 'Giải trí') { %>
+                                    Entertainment
+                                <% } else if (expense.category === 'Khác') { %>
+                                    Other
+                                <% } else { %>
+                                    <%= expense.category %>
+                                <% } %>
                             </span>
                         </td>
-                        <td class="amount"><%= expense.amount %> VND</td>
+                        <td class="amount"><%= new Intl.NumberFormat('vi-VN').format(expense.amount) %> VND</td>
                         <td class="actions">
-                            <a href="/expenses/<%= expense.id %>/edit" class="btn btn-edit"><i class="fas fa-edit"></i> Sửa</a>
+                            <a href="/expenses/<%= expense.id %>/edit" class="btn btn-edit"><i class="fas fa-edit"></i> Edit</a>
                             <form action="/expenses/<%= expense.id %>?_method=DELETE" method="POST" class="delete-form">
-                                <button type="submit" class="btn btn-delete" onclick="return confirm('Bạn có chắc muốn xóa khoản chi tiêu này?')"><i class="fas fa-trash-alt"></i> Xóa</button>
+                                <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this expense?')"><i class="fas fa-trash-alt"></i> Delete</button>
                             </form>
                         </td>
                     </tr>
@@ -86,8 +100,8 @@
     <% } else { %>
         <div class="empty-message">
             <i class="fas fa-receipt"></i>
-            <p>Chưa có khoản chi tiêu nào.</p> 
-            <a href="/expenses/new" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Thêm chi tiêu mới</a>
+            <p>No expenses found.</p> 
+            <a href="/expenses/new" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add New Expense</a>
         </div>
     <% } %>
 </div>

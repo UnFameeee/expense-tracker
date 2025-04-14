@@ -1,45 +1,59 @@
 <div class="card">
     <div class="card-header">
-        <h2><i class="fas fa-plus-circle"></i> Thêm thu nhập mới</h2>
+        <h2><i class="fas fa-plus-circle"></i> Add New Income</h2>
     </div>
 
-    <form action="/incomes" method="POST" class="expense-form">
+    <form action="/incomes" method="POST" class="income-form">
         <div class="form-group">
-            <label for="source"><i class="fas fa-info-circle"></i> Nguồn thu nhập:</label>
-            <select id="source" name="source">
-                <option value="Lương">💼 Lương</option>
-                <option value="Thưởng">🎁 Thưởng</option>
-                <option value="Đầu tư">📈 Đầu tư</option>
-                <option value="Kinh doanh">🏪 Kinh doanh</option>
-                <option value="Khác">💰 Khác</option>
-            </select>
+            <label for="description"><i class="fas fa-edit"></i> Description:</label>
+            <input type="text" id="description" name="description" placeholder="Enter income description" required autocomplete="off">
         </div>
 
         <div class="form-group">
-            <label for="description"><i class="fas fa-edit"></i> Mô tả:</label>
-            <input type="text" id="description" name="description" placeholder="Nhập mô tả thu nhập" autocomplete="off">
-        </div>
-
-        <div class="form-group">
-            <label for="amount"><i class="fas fa-money-bill-wave"></i> Số tiền (VND):</label>
-            <input type="number" id="amount" name="amount" step="1000" min="0" placeholder="Nhập số tiền" required>
+            <label for="amount"><i class="fas fa-money-bill-wave"></i> Amount (VND):</label>
+            <input type="number" id="amount" name="amount" step="1000" min="0" placeholder="Enter amount" required>
             <span id="formatted-amount"></span>
         </div>
 
         <div class="form-group">
+            <label for="category"><i class="fas fa-tag"></i> Category:</label>
+            <select id="category" name="category">
+                <option value="Salary">💰 Salary</option>
+                <option value="Bonus">🎁 Bonus</option>
+                <option value="Investment">📈 Investment</option>
+                <option value="Gift">🎀 Gift</option>
+                <option value="Other">📌 Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
             <label for="date"><i class="far fa-calendar-alt"></i> Ngày:</label>
-            <input type="date" id="date" name="date" value="<%= new Date().toISOString().split('T')[0] %>" required>
+            <input type="date" id="date" name="date" required>
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Lưu</button>
-            <a href="/incomes" class="btn"><i class="fas fa-times"></i> Hủy</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
+            <a href="/incomes" class="btn"><i class="fas fa-times"></i> Cancel</a>
         </div>
     </form>
 </div>
 
 <script>
-    // Hiệu ứng focus cho input
+    // Set today's date in client's local timezone
+    const today = new Date();
+    const localDateString = today.toISOString().split('T')[0];
+    
+    // Set date value immediately
+    if (document.getElementById('date')) {
+        document.getElementById('date').value = localDateString;
+    }
+    
+    // Also set when DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('date').value = localDateString;
+    });
+
+    // Input focus effect
     document.querySelectorAll('input, select').forEach(input => {
         input.addEventListener('focus', () => {
             input.parentElement.classList.add('focused');
@@ -50,7 +64,7 @@
         });
     });
 
-    // Format số tiền khi nhập
+    // Format amount when typing
     const amountInput = document.getElementById('amount');
     amountInput.addEventListener('input', function() {
         const value = this.value.replace(/,/g, '');
@@ -72,6 +86,6 @@
         display: block;
         margin-top: 5px;
         font-weight: 500;
-        color: #38b000;
+        color: var(--primary-color);
     }
 </style>

@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     
     res.render('index', { 
       expenses, 
-      total: total.toFixed(2),
+      total: total,
       title: 'Expense Tracker' 
     });
   } catch (error) {
