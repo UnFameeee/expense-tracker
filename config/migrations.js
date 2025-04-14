@@ -14,6 +14,30 @@ async function tableExists(tableName) {
   }
 }
 
+// Hàm tạo bảng users nếu chưa tồn tại
+async function createUsersTable() {
+  const exists = await tableExists('users');
+  if (!exists) {
+    try {
+      await db.query(`
+        CREATE TABLE users (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          username VARCHAR(50) NOT NULL UNIQUE,
+          password VARCHAR(255) NOT NULL,
+          email VARCHAR(100) NOT NULL UNIQUE,
+          role ENUM('admin', 'user') DEFAULT 'user',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      console.log('Users table created successfully');
+    } catch (error) {
+      console.error('Error creating users table:', error);
+    }
+  } else {
+    console.log('Users table already exists');
+  }
+}
+
 // Hàm tạo bảng expenses nếu chưa tồn tại
 async function createExpensesTable() {
   const exists = await tableExists('expenses');
@@ -22,11 +46,13 @@ async function createExpensesTable() {
       await db.query(`
         CREATE TABLE expenses (
           id INT AUTO_INCREMENT PRIMARY KEY,
+          user_id INT NOT NULL,
           description VARCHAR(255) NOT NULL,
           amount DECIMAL(10, 2) NOT NULL,
           category VARCHAR(100) NOT NULL,
           date DATE NOT NULL,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )
       `);
       console.log('Expenses table created successfully');
@@ -35,6 +61,18 @@ async function createExpensesTable() {
     }
   } else {
     console.log('Expenses table already exists');
+    
+    // Check if user_id column exists, add it if not
+    try {
+      const [columns] = await db.query(`SHOW COLUMNS FROM expenses LIKE 'user_id'`);
+      if (columns.length === 0) {
+        await db.query(`ALTER TABLE expenses ADD COLUMN user_id INT NOT NULL DEFAULT 1 AFTER id`);
+        await db.query(`ALTER TABLE expenses ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE`);
+        console.log('Added user_id column to expenses table');
+      }
+    } catch (error) {
+      console.error('Error updating expenses table:', error);
+    }
   }
 }
 
@@ -46,11 +84,13 @@ async function createIncomesTable() {
       await db.query(`
         CREATE TABLE incomes (
           id INT AUTO_INCREMENT PRIMARY KEY,
+          user_id INT NOT NULL,
           source VARCHAR(100) NOT NULL,
           amount DECIMAL(10, 2) NOT NULL,
           date DATE NOT NULL,
           description TEXT,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )
       `);
       console.log('Incomes table created successfully');
@@ -59,6 +99,18 @@ async function createIncomesTable() {
     }
   } else {
     console.log('Incomes table already exists');
+    
+    // Check if user_id column exists, add it if not
+    try {
+      const [columns] = await db.query(`SHOW COLUMNS FROM incomes LIKE 'user_id'`);
+      if (columns.length === 0) {
+        await db.query(`ALTER TABLE incomes ADD COLUMN user_id INT NOT NULL DEFAULT 1 AFTER id`);
+        await db.query(`ALTER TABLE incomes ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE`);
+        console.log('Added user_id column to incomes table');
+      }
+    } catch (error) {
+      console.error('Error updating incomes table:', error);
+    }
   }
 }
 
@@ -70,13 +122,15 @@ async function createBudgetsTable() {
       await db.query(`
         CREATE TABLE budgets (
           id INT AUTO_INCREMENT PRIMARY KEY,
+          user_id INT NOT NULL,
           base_salary DECIMAL(10, 2) NOT NULL,
           month INT NOT NULL,
           year INT NOT NULL,
           savings_goal DECIMAL(10, 2) NOT NULL,
           category_limits TEXT,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          UNIQUE KEY month_year_unique (month, year)
+          UNIQUE KEY user_month_year_unique (user_id, month, year),
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )
       `);
       console.log('Budgets table created successfully');
@@ -85,12 +139,28 @@ async function createBudgetsTable() {
     }
   } else {
     console.log('Budgets table already exists');
+    
+    // Check if user_id column exists, add it if not
+    try {
+      const [columns] = await db.query(`SHOW COLUMNS FROM budgets LIKE 'user_id'`);
+      if (columns.length === 0) {
+        await db.query(`ALTER TABLE budgets ADD COLUMN user_id INT NOT NULL DEFAULT 1 AFTER id`);
+        await db.query(`ALTER TABLE budgets ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE`);
+        // Update unique constraint to include user_id
+        await db.query(`ALTER TABLE budgets DROP INDEX month_year_unique`);
+        await db.query(`ALTER TABLE budgets ADD UNIQUE KEY user_month_year_unique (user_id, month, year)`);
+        console.log('Added user_id column to budgets table');
+      }
+    } catch (error) {
+      console.error('Error updating budgets table:', error);
+    }
   }
 }
 
 // Hàm chạy tất cả các migrations
 async function runMigrations() {
   try {
+    await createUsersTable();
     await createExpensesTable();
     await createIncomesTable();
     await createBudgetsTable();

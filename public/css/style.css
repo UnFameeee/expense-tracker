@@ -22,9 +22,9 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
-    color: var(--text-color);
+    color: #333;
     background-color: var(--body-bg);
     min-height: 100vh;
     display: flex;
@@ -196,12 +196,14 @@ nav ul li a:hover {
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
-    color: #fff;
+    background-color: #72d1a8;
+    border-color: #72d1a8;
 }
 
-.btn-primary:hover {
-    background-color: var(--primary-dark);
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #5cb894;
+    border-color: #5cb894;
 }
 
 .btn-edit {
@@ -777,4 +779,47 @@ header h1 i,
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary-dark);
+}
+
+/* Landing Page Styles */
+.hero-section {
+    background-image: linear-gradient(135deg, #72d1a8 0%, #5cb894 100%);
+    color: white;
+    padding: 5rem 0;
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.cta-section {
+    background-color: #f8f9fa;
+    padding: 4rem 0;
+}
+
+.footer {
+    padding: 2rem 0;
+    background-color: #212529;
+    color: white;
+}
+
+/* Button Styles */
+.btn-outline-light:hover {
+    color: #72d1a8;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 3rem 0;
+    }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    
+    .cta-section {
+        padding: 2rem 0;
+    }
 }

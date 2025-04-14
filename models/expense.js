@@ -1,18 +1,18 @@
 const db = require('../config/database');
 
 class Expense {
-  static async getAll() {
+  static async getAll(userId) {
     try {
-      const [rows] = await db.query('SELECT * FROM expenses ORDER BY date DESC');
+      const [rows] = await db.query('SELECT * FROM expenses WHERE user_id = ? ORDER BY date DESC', [userId]);
       return rows;
     } catch (error) {
       throw error;
     }
   }
 
-  static async getById(id) {
+  static async getById(id, userId) {
     try {
-      const [rows] = await db.query('SELECT * FROM expenses WHERE id = ?', [id]);
+      const [rows] = await db.query('SELECT * FROM expenses WHERE id = ? AND user_id = ?', [id, userId]);
       return rows[0];
     } catch (error) {
       throw error;
@@ -21,10 +21,10 @@ class Expense {
 
   static async create(expenseData) {
     try {
-      const { description, amount, category, date } = expenseData;
+      const { description, amount, category, date, user_id } = expenseData;
       const [result] = await db.query(
-        'INSERT INTO expenses (description, amount, category, date) VALUES (?, ?, ?, ?)',
-        [description, amount, category, date]
+        'INSERT INTO expenses (description, amount, category, date, user_id) VALUES (?, ?, ?, ?, ?)',
+        [description, amount, category, date, user_id]
       );
       return result.insertId;
     } catch (error) {
@@ -32,12 +32,12 @@ class Expense {
     }
   }
 
-  static async update(id, expenseData) {
+  static async update(id, expenseData, userId) {
     try {
       const { description, amount, category, date } = expenseData;
       const [result] = await db.query(
-        'UPDATE expenses SET description = ?, amount = ?, category = ?, date = ? WHERE id = ?',
-        [description, amount, category, date, id]
+        'UPDATE expenses SET description = ?, amount = ?, category = ?, date = ? WHERE id = ? AND user_id = ?',
+        [description, amount, category, date, id, userId]
       );
       return result.affectedRows;
     } catch (error) {
@@ -45,21 +45,21 @@ class Expense {
     }
   }
 
-  static async delete(id) {
+  static async delete(id, userId) {
     try {
-      const [result] = await db.query('DELETE FROM expenses WHERE id = ?', [id]);
+      const [result] = await db.query('DELETE FROM expenses WHERE id = ? AND user_id = ?', [id, userId]);
       return result.affectedRows;
     } catch (error) {
       throw error;
     }
   }
 
-  static async getDailyExpenses(date) {
+  static async getDailyExpenses(date, userId) {
     try {
       const formattedDate = new Date(date).toISOString().split('T')[0];
       const [rows] = await db.query(
-        'SELECT * FROM expenses WHERE DATE(date) = ? ORDER BY date DESC',
-        [formattedDate]
+        'SELECT * FROM expenses WHERE DATE(date) = ? AND user_id = ? ORDER BY date DESC',
+        [formattedDate, userId]
       );
       return rows;
     } catch (error) {
@@ -67,7 +67,7 @@ class Expense {
     }
   }
 
-  static async getWeeklyExpenses(startDate = null) {
+  static async getWeeklyExpenses(startDate = null, userId) {
     try {
       let query;
       let params = [];
@@ -79,11 +79,12 @@ class Expense {
         endDate.setDate(endDate.getDate() + 6);
         const formattedEndDate = endDate.toISOString().split('T')[0];
         
-        query = 'SELECT * FROM expenses WHERE DATE(date) BETWEEN ? AND ? ORDER BY date DESC';
-        params = [formattedStartDate, formattedEndDate];
+        query = 'SELECT * FROM expenses WHERE DATE(date) BETWEEN ? AND ? AND user_id = ? ORDER BY date DESC';
+        params = [formattedStartDate, formattedEndDate, userId];
       } else {
         // Nếu không có startDate, lấy chi tiêu trong 7 ngày gần nhất
-        query = 'SELECT * FROM expenses WHERE date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) ORDER BY date DESC';
+        query = 'SELECT * FROM expenses WHERE date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND user_id = ? ORDER BY date DESC';
+        params = [userId];
       }
       
       const [rows] = await db.query(query, params);
@@ -93,11 +94,11 @@ class Expense {
     }
   }
 
-  static async getMonthlyExpenses(month, year) {
+  static async getMonthlyExpenses(month, year, userId) {
     try {
       const [rows] = await db.query(
-        'SELECT * FROM expenses WHERE MONTH(date) = ? AND YEAR(date) = ? ORDER BY date DESC',
-        [month, year]
+        'SELECT * FROM expenses WHERE MONTH(date) = ? AND YEAR(date) = ? AND user_id = ? ORDER BY date DESC',
+        [month, year, userId]
       );
       return rows;
     } catch (error) {
@@ -105,11 +106,11 @@ class Expense {
     }
   }
 
-  static async getYearlyExpenses(year) {
+  static async getYearlyExpenses(year, userId) {
     try {
       const [rows] = await db.query(
-        'SELECT * FROM expenses WHERE YEAR(date) = ? ORDER BY date DESC',
-        [year]
+        'SELECT * FROM expenses WHERE YEAR(date) = ? AND user_id = ? ORDER BY date DESC',
+        [year, userId]
       );
       return rows;
     } catch (error) {
@@ -117,19 +118,19 @@ class Expense {
     }
   }
 
-  static async getCategoryTotals(period = 'month', options = {}) {
+  static async getCategoryTotals(period = 'month', options = {}, userId) {
     try {
       let dateCondition = '';
-      let params = [];
+      let params = [userId]; // Start with userId as first parameter
       
       switch (period) {
         case 'day':
           if (options.date) {
             const formattedDate = new Date(options.date).toISOString().split('T')[0];
-            dateCondition = 'WHERE DATE(date) = ?';
-            params.push(formattedDate);
+            dateCondition = 'WHERE DATE(date) = ? AND user_id = ?';
+            params = [formattedDate, userId]; // Reset params array
           } else {
-            dateCondition = 'WHERE DATE(date) = CURDATE()';
+            dateCondition = 'WHERE DATE(date) = CURDATE() AND user_id = ?';
           }
           break;
         case 'week':
@@ -139,30 +140,30 @@ class Expense {
             endDate.setDate(endDate.getDate() + 6);
             const formattedEndDate = endDate.toISOString().split('T')[0];
             
-            dateCondition = 'WHERE DATE(date) BETWEEN ? AND ?';
-            params.push(formattedStartDate, formattedEndDate);
+            dateCondition = 'WHERE DATE(date) BETWEEN ? AND ? AND user_id = ?';
+            params = [formattedStartDate, formattedEndDate, userId]; // Reset params array
           } else {
-            dateCondition = 'WHERE date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
+            dateCondition = 'WHERE date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND user_id = ?';
           }
           break;
         case 'month':
           if (options.month && options.year) {
-            dateCondition = 'WHERE MONTH(date) = ? AND YEAR(date) = ?';
-            params.push(options.month, options.year);
+            dateCondition = 'WHERE MONTH(date) = ? AND YEAR(date) = ? AND user_id = ?';
+            params = [options.month, options.year, userId]; // Reset params array
           } else {
-            dateCondition = 'WHERE MONTH(date) = MONTH(CURDATE()) AND YEAR(date) = YEAR(CURDATE())';
+            dateCondition = 'WHERE MONTH(date) = MONTH(CURDATE()) AND YEAR(date) = YEAR(CURDATE()) AND user_id = ?';
           }
           break;
         case 'year':
           if (options.year) {
-            dateCondition = 'WHERE YEAR(date) = ?';
-            params.push(options.year);
+            dateCondition = 'WHERE YEAR(date) = ? AND user_id = ?';
+            params = [options.year, userId]; // Reset params array
           } else {
-            dateCondition = 'WHERE YEAR(date) = YEAR(CURDATE())';
+            dateCondition = 'WHERE YEAR(date) = YEAR(CURDATE()) AND user_id = ?';
           }
           break;
         default:
-          dateCondition = '';
+          dateCondition = 'WHERE user_id = ?';
       }
       
       const [rows] = await db.query(

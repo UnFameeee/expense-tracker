@@ -4,12 +4,16 @@ const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
+const session = require('express-session');
+const flash = require('connect-flash');
 const expenseRoutes = require('./routes/expenses');
 const incomeRoutes = require('./routes/incomes');
 const budgetRoutes = require('./routes/budgets');
 const statisticsRoutes = require('./routes/statistics');
+const authRoutes = require('./routes/auth');
 const { runMigrations } = require('./config/migrations');
 const { getTranslation, defaultLanguage } = require('./config/i18n');
+const { loadUser, isAuthenticated } = require('./middleware/auth');
 
 // Initialize the app
 const app = express();
@@ -29,6 +33,19 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
+// Setup session
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'expense-tracker-secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
+  }
+}));
+
+// Setup flash messages
+app.use(flash());
+
 // Language middleware
 app.use((req, res, next) => {
   // Set default language
@@ -43,6 +60,9 @@ app.use((req, res, next) => {
   
   next();
 });
+
+// Load user middleware
+app.use(loadUser);
 
 // Make some app data available to all views
 app.use((req, res, next) => {
@@ -65,14 +85,32 @@ app.use((req, res, next) => {
     { value: 'Other', label: 'Other', icon: '📌' }
   ];
   
+  // Flash messages
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  
   next();
 });
 
 // Routes
-app.use('/', expenseRoutes);
-app.use('/incomes', incomeRoutes);
-app.use('/budgets', budgetRoutes);
-app.use('/statistics', statisticsRoutes);
+app.use('/auth', authRoutes);
+app.use('/expenses', isAuthenticated, expenseRoutes);
+app.use('/incomes', isAuthenticated, incomeRoutes);
+app.use('/budgets', isAuthenticated, budgetRoutes);
+app.use('/statistics', isAuthenticated, statisticsRoutes);
+
+// Landing page route
+app.get('/', (req, res) => {
+  // If user is already authenticated, redirect to dashboard
+  if (req.session && req.session.userId) {
+    return res.redirect('/expenses');
+  }
+  
+  // Otherwise show landing page
+  res.render('landing', { 
+    layout: false // Don't use the standard layout for the landing page
+  });
+});
 
 // Chạy migrations để tạo các bảng cần thiết
 (async () => {

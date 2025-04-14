@@ -5,7 +5,7 @@ const Expense = require('../models/expense');
 // GET home page - list all expenses
 router.get('/', async (req, res) => {
   try {
-    const expenses = await Expense.getAll();
+    const expenses = await Expense.getAll(req.session.userId);
     
     // Calculate total expenses
     const total = expenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
@@ -22,15 +22,21 @@ router.get('/', async (req, res) => {
 });
 
 // GET form to create new expense
-router.get('/expenses/new', (req, res) => {
+router.get('/new', (req, res) => {
   res.render('expenses/new', { title: 'Add New Expense' });
 });
 
 // POST create new expense
-router.post('/expenses', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
-    await Expense.create(req.body);
-    res.redirect('/');
+    // Add user_id to expense data
+    const expenseData = {
+      ...req.body,
+      user_id: req.session.userId
+    };
+    
+    await Expense.create(expenseData);
+    res.redirect('/expenses');
   } catch (error) {
     console.error(error);
     res.status(500).render('error', { message: 'Error creating expense' });
@@ -38,9 +44,9 @@ router.post('/expenses', async (req, res) => {
 });
 
 // GET form to edit expense
-router.get('/expenses/:id/edit', async (req, res) => {
+router.get('/:id/edit', async (req, res) => {
   try {
-    const expense = await Expense.getById(req.params.id);
+    const expense = await Expense.getById(req.params.id, req.session.userId);
     if (!expense) {
       return res.status(404).render('error', { message: 'Expense not found' });
     }
@@ -52,10 +58,10 @@ router.get('/expenses/:id/edit', async (req, res) => {
 });
 
 // PUT update expense
-router.put('/expenses/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
-    await Expense.update(req.params.id, req.body);
-    res.redirect('/');
+    await Expense.update(req.params.id, req.body, req.session.userId);
+    res.redirect('/expenses');
   } catch (error) {
     console.error(error);
     res.status(500).render('error', { message: 'Error updating expense' });
@@ -63,10 +69,10 @@ router.put('/expenses/:id', async (req, res) => {
 });
 
 // DELETE expense
-router.delete('/expenses/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    await Expense.delete(req.params.id);
-    res.redirect('/');
+    await Expense.delete(req.params.id, req.session.userId);
+    res.redirect('/expenses');
   } catch (error) {
     console.error(error);
     res.status(500).render('error', { message: 'Error deleting expense' });
