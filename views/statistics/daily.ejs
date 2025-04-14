@@ -1,0 +1,274 @@
+<div class="dashboard-summary">
+    <div class="summary-card" style="background-color: #fff;">
+        <div class="icon" style="background-color: #e63946;">
+            <i class="fas fa-calendar-day"></i>
+        </div>
+        <div class="info">
+            <h3><%= new Intl.NumberFormat('vi-VN').format(total) %> VND</h3>
+            <p>Chi tiêu ngày <%= date.toLocaleDateString('vi-VN') %></p>
+        </div>
+    </div>
+    <div class="summary-card" style="background-color: #fff;">
+        <div class="icon" style="background-color: #4361ee;">
+            <i class="fas fa-receipt"></i>
+        </div>
+        <div class="info">
+            <h3><%= expenses.length %></h3>
+            <p>Số khoản chi tiêu</p>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2><i class="fas fa-chart-pie"></i> Thống kê chi tiêu theo ngày</h2>
+        <div class="stats-nav">
+            <a href="/statistics" class="btn"><i class="fas fa-chart-bar"></i> Tổng quan</a>
+            <a href="/statistics/daily" class="btn btn-primary"><i class="fas fa-calendar-day"></i> Ngày</a>
+            <a href="/statistics/weekly" class="btn"><i class="fas fa-calendar-week"></i> Tuần</a>
+            <a href="/statistics/monthly" class="btn"><i class="fas fa-calendar-alt"></i> Tháng</a>
+            <a href="/statistics/yearly" class="btn"><i class="fas fa-calendar"></i> Năm</a>
+        </div>
+    </div>
+
+    <div class="date-selector">
+        <form action="/statistics/daily" method="GET">
+            <div class="form-group">
+                <label for="date"><i class="fas fa-calendar"></i> Chọn ngày:</label>
+                <input type="date" id="date" name="date" value="<%= date.toISOString().split('T')[0] %>" onchange="this.form.submit()">
+            </div>
+        </form>
+    </div>
+
+    <% if (expenses.length > 0) { %>
+        <div class="stats-overview">
+            <div class="expenses-list">
+                <h3>Chi tiêu trong ngày</h3>
+                <table class="expense-table">
+                    <thead>
+                        <tr>
+                            <th>Mô tả</th>
+                            <th>Danh mục</th>
+                            <th>Số tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% expenses.forEach(expense => { %>
+                            <tr>
+                                <td><%= expense.description %></td>
+                                <td>
+                                    <span class="category-badge">
+                                        <% if (expense.category === 'Ăn uống') { %>
+                                            🍕
+                                        <% } else if (expense.category === 'Di chuyển') { %>
+                                            🚗
+                                        <% } else if (expense.category === 'Mua sắm') { %>
+                                            🛒
+                                        <% } else if (expense.category === 'Hóa đơn') { %>
+                                            📄
+                                        <% } else if (expense.category === 'Giải trí') { %>
+                                            🎮
+                                        <% } else { %>
+                                            📌
+                                        <% } %>
+                                        <%= expense.category %>
+                                    </span>
+                                </td>
+                                <td class="amount"><%= expense.amount %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="category-distribution">
+                <h3>Phân bố chi tiêu theo danh mục</h3>
+                <% if (categoryTotals && categoryTotals.length > 0) { %>
+                    <div class="pie-chart-container">
+                        <canvas id="categoryPieChart"></canvas>
+                    </div>
+                    <div class="category-list">
+                        <% categoryTotals.forEach(category => { %>
+                            <div class="category-item">
+                                <div class="category-name">
+                                    <span class="category-badge">
+                                        <% if (category.category === 'Ăn uống') { %>
+                                            🍕
+                                        <% } else if (category.category === 'Di chuyển') { %>
+                                            🚗
+                                        <% } else if (category.category === 'Mua sắm') { %>
+                                            🛒
+                                        <% } else if (category.category === 'Hóa đơn') { %>
+                                            📄
+                                        <% } else if (category.category === 'Giải trí') { %>
+                                            🎮
+                                        <% } else { %>
+                                            📌
+                                        <% } %>
+                                        <%= category.category %>
+                                    </span>
+                                </div>
+                                <div class="category-amount"><%= new Intl.NumberFormat('vi-VN').format(category.total) %> VND</div>
+                                <div class="category-percent"><%= ((category.total / total) * 100).toFixed(1) %>%</div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <p class="no-data">Không có dữ liệu danh mục cho ngày này</p>
+                <% } %>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="empty-message">
+            <i class="fas fa-calendar-day"></i>
+            <p>Không có chi tiêu nào trong ngày <%= date.toLocaleDateString('vi-VN') %></p>
+            <a href="/expenses/new" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Thêm chi tiêu mới</a>
+        </div>
+    <% } %>
+</div>
+
+<% if (categoryTotals && categoryTotals.length > 0) { %>
+<script>
+    // Biểu đồ phân bố chi tiêu theo danh mục
+    const categoryCtx = document.getElementById('categoryPieChart').getContext('2d');
+    const categoryData = {
+        labels: [<% categoryTotals.forEach(category => { %>'<%= category.category %>', <% }); %>],
+        datasets: [{
+            data: [<% categoryTotals.forEach(category => { %><%= category.total %>, <% }); %>],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(255, 159, 64, 0.7)',
+                'rgba(201, 203, 207, 0.7)'
+            ],
+            borderWidth: 1
+        }]
+    };
+    
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: categoryData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                }
+            }
+        }
+    });
+</script>
+<% } %>
+
+<style>
+    .date-selector {
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background-color: #f8fafc;
+        border-radius: var(--border-radius);
+    }
+    
+    .date-selector .form-group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .date-selector label {
+        font-weight: 500;
+        color: var(--dark-color);
+        margin-bottom: 0;
+    }
+    
+    .date-selector input[type="date"] {
+        padding: 0.5rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--border-radius);
+        background-color: white;
+    }
+    
+    .stats-nav {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .stats-overview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .expenses-list {
+        flex: 1;
+        min-width: 300px;
+    }
+    
+    .category-distribution {
+        flex: 1;
+        min-width: 300px;
+    }
+    
+    .pie-chart-container {
+        height: 250px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .category-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .category-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .category-name {
+        flex: 2;
+    }
+    
+    .category-amount {
+        flex: 1;
+        text-align: right;
+    }
+    
+    .category-percent {
+        flex: 0 0 60px;
+        text-align: right;
+        font-weight: 500;
+    }
+    
+    h3 {
+        margin-bottom: 1.5rem;
+        color: var(--dark-color);
+        font-size: 1.2rem;
+    }
+    
+    .no-data {
+        color: var(--text-muted);
+        text-align: center;
+        padding: 2rem 0;
+    }
+    
+    @media (max-width: 768px) {
+        .stats-nav {
+            flex-wrap: wrap;
+        }
+        
+        .stats-overview {
+            flex-direction: column;
+        }
+        
+        .date-selector .form-group {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>

@@ -1,0 +1,89 @@
+<div class="dashboard-summary">
+    <div class="summary-card" style="background-color: #fff;">
+        <div class="icon" style="background-color: #38b000;">
+            <i class="fas fa-money-bill-wave"></i>
+        </div>
+        <div class="info">
+            <h3><%= total %> VND</h3>
+            <p>Tổng thu nhập</p>
+        </div>
+    </div>
+    <div class="summary-card" style="background-color: #fff;">
+        <div class="icon" style="background-color: #4361ee;">
+            <i class="fas fa-receipt"></i>
+        </div>
+        <div class="info">
+            <h3><%= incomes.length %></h3>
+            <p>Số khoản thu nhập</p>
+        </div>
+    </div>
+    <div class="summary-card" style="background-color: #fff;">
+        <div class="icon" style="background-color: #e63946;">
+            <i class="fas fa-calendar-alt"></i>
+        </div>
+        <div class="info">
+            <h3><%= new Date().toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' }) %></h3>
+            <p>Tháng hiện tại</p>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2><i class="fas fa-money-bill-wave"></i> Danh sách thu nhập</h2>
+        <div>
+            <a href="/incomes/new" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Thêm mới</a>
+        </div>
+    </div>
+
+    <% if (incomes.length > 0) { %>
+        <table class="expense-table">
+            <thead>
+                <tr>
+                    <th><i class="far fa-calendar-alt"></i> Ngày</th>
+                    <th><i class="fas fa-info-circle"></i> Nguồn</th>
+                    <th><i class="fas fa-align-left"></i> Mô tả</th>
+                    <th><i class="fas fa-money-bill-wave"></i> Số tiền</th>
+                    <th><i class="fas fa-cogs"></i> Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% incomes.forEach(income => { %>
+                    <tr>
+                        <td><%= new Date(income.date).toLocaleDateString('vi-VN') %></td>
+                        <td>
+                            <span class="category-badge">
+                                <% if (income.source === 'Lương') { %>
+                                    💼
+                                <% } else if (income.source === 'Thưởng') { %>
+                                    🎁
+                                <% } else if (income.source === 'Đầu tư') { %>
+                                    📈
+                                <% } else if (income.source === 'Kinh doanh') { %>
+                                    🏪
+                                <% } else { %>
+                                    💰
+                                <% } %>
+                                <%= income.source %>
+                            </span>
+                        </td>
+                        <td><%= income.description %></td>
+                        <td class="amount" style="color: #38b000;"><%= income.amount %></td>
+                        <td class="actions">
+                            <a href="/incomes/<%= income.id %>/edit" class="btn btn-edit"><i class="fas fa-edit"></i> Sửa</a>
+                            <form action="/incomes/<%= income.id %>?_method=DELETE" method="POST" class="delete-form">
+                                <button type="submit" class="btn btn-delete" onclick="return confirm('Bạn có chắc muốn xóa khoản thu nhập này?')"><i class="fas fa-trash-alt"></i> Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <div class="empty-message">
+            <i class="fas fa-money-bill-wave"></i>
+            <p>Chưa có khoản thu nhập nào.</p> 
+            <a href="/incomes/new" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Thêm thu nhập mới</a>
+        </div>
+    <% } %>
+</div>

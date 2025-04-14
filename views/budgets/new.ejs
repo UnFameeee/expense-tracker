@@ -1,0 +1,158 @@
+<div class="card">
+    <div class="card-header">
+        <h2><i class="fas fa-plus-circle"></i> Tạo ngân sách mới</h2>
+    </div>
+
+    <form action="/budgets" method="POST" class="expense-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="month"><i class="fas fa-calendar-month"></i> Tháng:</label>
+                <select id="month" name="month" required>
+                    <option value="1" <%= currentMonth === 1 ? 'selected' : '' %>>Tháng 1</option>
+                    <option value="2" <%= currentMonth === 2 ? 'selected' : '' %>>Tháng 2</option>
+                    <option value="3" <%= currentMonth === 3 ? 'selected' : '' %>>Tháng 3</option>
+                    <option value="4" <%= currentMonth === 4 ? 'selected' : '' %>>Tháng 4</option>
+                    <option value="5" <%= currentMonth === 5 ? 'selected' : '' %>>Tháng 5</option>
+                    <option value="6" <%= currentMonth === 6 ? 'selected' : '' %>>Tháng 6</option>
+                    <option value="7" <%= currentMonth === 7 ? 'selected' : '' %>>Tháng 7</option>
+                    <option value="8" <%= currentMonth === 8 ? 'selected' : '' %>>Tháng 8</option>
+                    <option value="9" <%= currentMonth === 9 ? 'selected' : '' %>>Tháng 9</option>
+                    <option value="10" <%= currentMonth === 10 ? 'selected' : '' %>>Tháng 10</option>
+                    <option value="11" <%= currentMonth === 11 ? 'selected' : '' %>>Tháng 11</option>
+                    <option value="12" <%= currentMonth === 12 ? 'selected' : '' %>>Tháng 12</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="year"><i class="fas fa-calendar-year"></i> Năm:</label>
+                <input type="number" id="year" name="year" value="<%= currentYear %>" min="2020" max="2100" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="base_salary"><i class="fas fa-money-bill-wave"></i> Lương cơ bản (VND):</label>
+            <input type="number" id="base_salary" name="base_salary" step="100000" min="0" placeholder="Nhập lương cơ bản" required>
+            <span id="formatted-salary"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="savings_goal"><i class="fas fa-piggy-bank"></i> Mục tiêu tiết kiệm (VND):</label>
+            <input type="number" id="savings_goal" name="savings_goal" step="100000" min="0" placeholder="Nhập mục tiêu tiết kiệm" required>
+            <span id="formatted-savings"></span>
+        </div>
+
+        <div class="category-limits">
+            <h3><i class="fas fa-tags"></i> Giới hạn chi tiêu theo danh mục</h3>
+            <p class="hint">Thiết lập giới hạn chi tiêu tối đa cho mỗi danh mục trong tháng</p>
+            
+            <% categories.forEach(category => { %>
+                <div class="form-group">
+                    <label for="limit_<%= category %>">
+                        <% if (category === 'Ăn uống') { %>
+                            🍕
+                        <% } else if (category === 'Di chuyển') { %>
+                            🚗
+                        <% } else if (category === 'Mua sắm') { %>
+                            🛒
+                        <% } else if (category === 'Hóa đơn') { %>
+                            📄
+                        <% } else if (category === 'Giải trí') { %>
+                            🎮
+                        <% } else { %>
+                            📌
+                        <% } %>
+                        <%= category %>:
+                    </label>
+                    <input type="number" id="limit_<%= category %>" name="limit_<%= category %>" step="10000" min="0" placeholder="Giới hạn cho <%= category %>">
+                    <span id="formatted-limit-<%= category.replace(/\s+/g, '-').toLowerCase() %>"></span>
+                </div>
+            <% }); %>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Lưu</button>
+            <a href="/budgets" class="btn"><i class="fas fa-times"></i> Hủy</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Hiệu ứng focus cho input
+    document.querySelectorAll('input, select').forEach(input => {
+        input.addEventListener('focus', () => {
+            input.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', () => {
+            input.parentElement.classList.remove('focused');
+        });
+    });
+
+    // Format số tiền khi nhập
+    const formatAmount = (inputId, outputId) => {
+        const input = document.getElementById(inputId);
+        const output = document.getElementById(outputId);
+        
+        input.addEventListener('input', function() {
+            const value = this.value.replace(/,/g, '');
+            if (value) {
+                const formattedValue = new Intl.NumberFormat('vi-VN').format(value);
+                output.textContent = formattedValue + ' VND';
+            } else {
+                output.textContent = '';
+            }
+        });
+    };
+
+    formatAmount('base_salary', 'formatted-salary');
+    formatAmount('savings_goal', 'formatted-savings');
+    
+    // Format giới hạn danh mục
+    <% categories.forEach(category => { %>
+        formatAmount('limit_<%= category %>', 'formatted-limit-<%= category.replace(/\s+/g, '-').toLowerCase() %>');
+    <% }); %>
+</script>
+
+<style>
+    .form-group.focused label {
+        color: var(--primary-color);
+    }
+    
+    #formatted-salary, #formatted-savings, [id^="formatted-limit-"] {
+        display: block;
+        margin-top: 5px;
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .form-row .form-group {
+        flex: 1;
+    }
+    
+    .category-limits {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background-color: #f8fafc;
+        border-radius: var(--border-radius);
+        border: 1px solid #e2e8f0;
+    }
+    
+    .category-limits h3 {
+        margin-bottom: 1rem;
+        color: var(--dark-color);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .hint {
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+    }
+</style>

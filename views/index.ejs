@@ -1,0 +1,93 @@
+<div class="dashboard-summary">
+    <div class="summary-card total-expenses">
+        <div class="icon">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="info">
+            <h3><%= total %> VND</h3>
+            <p>Tổng chi tiêu</p>
+        </div>
+    </div>
+    <% if (expenses.length > 0) { %>
+        <div class="summary-card">
+            <div class="icon" style="background-color: #4361ee;">
+                <i class="fas fa-receipt"></i>
+            </div>
+            <div class="info">
+                <h3><%= expenses.length %></h3>
+                <p>Số khoản chi tiêu</p>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="icon" style="background-color: #38b000;">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="info">
+                <h3><%= new Date().toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' }) %></h3>
+                <p>Tháng hiện tại</p>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2><i class="fas fa-list"></i> Danh sách chi tiêu</h2>
+        <div>
+            <a href="/expenses/new" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Thêm mới</a>
+        </div>
+    </div>
+
+    <% if (expenses.length > 0) { %>
+        <table class="expense-table">
+            <thead>
+                <tr>
+                    <th><i class="far fa-calendar-alt"></i> Ngày</th>
+                    <th><i class="fas fa-align-left"></i> Mô tả</th>
+                    <th><i class="fas fa-tag"></i> Danh mục</th>
+                    <th><i class="fas fa-money-bill-wave"></i> Số tiền</th>
+                    <th><i class="fas fa-cogs"></i> Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% expenses.forEach(expense => { %>
+                    <tr>
+                        <td><%= new Date(expense.date).toLocaleDateString('vi-VN') %></td>
+                        <td><%= expense.description %></td>
+                        <td>
+                            <span class="category-badge">
+                                <% if (expense.category === 'Ăn uống') { %>
+                                    🍕
+                                <% } else if (expense.category === 'Di chuyển') { %>
+                                    🚗
+                                <% } else if (expense.category === 'Mua sắm') { %>
+                                    🛒
+                                <% } else if (expense.category === 'Hóa đơn') { %>
+                                    📄
+                                <% } else if (expense.category === 'Giải trí') { %>
+                                    🎮
+                                <% } else { %>
+                                    📌
+                                <% } %>
+                                <%= expense.category %>
+                            </span>
+                        </td>
+                        <td class="amount"><%= expense.amount %> VND</td>
+                        <td class="actions">
+                            <a href="/expenses/<%= expense.id %>/edit" class="btn btn-edit"><i class="fas fa-edit"></i> Sửa</a>
+                            <form action="/expenses/<%= expense.id %>?_method=DELETE" method="POST" class="delete-form">
+                                <button type="submit" class="btn btn-delete" onclick="return confirm('Bạn có chắc muốn xóa khoản chi tiêu này?')"><i class="fas fa-trash-alt"></i> Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <div class="empty-message">
+            <i class="fas fa-receipt"></i>
+            <p>Chưa có khoản chi tiêu nào.</p> 
+            <a href="/expenses/new" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Thêm chi tiêu mới</a>
+        </div>
+    <% } %>
+</div>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title : __('app_name') %></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
+    <!-- Chart.js for statistics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="animate__animated animate__fadeIn"><i class="fas fa-wallet"></i> <%= __('app_name') %></h1>
+            <nav>
+                <ul>
+                    <li><a href="/"><i class="fas fa-home"></i> <%= __('home') %></a></li>
+                    <li><a href="/expenses/new"><i class="fas fa-plus-circle"></i> <%= __('add_expense') %></a></li>
+                    <li><a href="/incomes"><i class="fas fa-money-bill-wave"></i> <%= __('incomes') %></a></li>
+                    <li><a href="/budgets"><i class="fas fa-piggy-bank"></i> <%= __('budgets') %></a></li>
+                    <li><a href="/budgets/forecast"><i class="fas fa-chart-line"></i> Forecast</a></li>
+                    <li><a href="/statistics"><i class="fas fa-chart-pie"></i> <%= __('statistics') %></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="container animate__animated animate__fadeIn">
+        <%- body %>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; <%= new Date().getFullYear() %> <%= __('app_name') %> - Manage your finances effectively</p>
+            <div class="social-icons">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Button effects
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('mouseenter', () => {
+                button.style.transform = 'translateY(-2px)';
+                button.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+            });
+            
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = '';
+                button.style.boxShadow = '';
+            });
+        });
+
+        // Format currency amounts
+        document.querySelectorAll('.amount').forEach(element => {
+            const amount = parseFloat(element.textContent);
+            if (!isNaN(amount)) {
+                element.textContent = new Intl.NumberFormat('en-US', { 
+                    style: 'currency', 
+                    currency: 'USD',
+                    minimumFractionDigits: 2
+                }).format(amount);
+            }
+        });
+        
+        // Fix icon alignment
+        document.querySelectorAll('.category-badge, .btn, nav ul li a, header h1, .card-header h2').forEach(element => {
+            element.style.display = 'inline-flex';
+            element.style.alignItems = 'center';
+            element.style.justifyContent = 'center';
+        });
+        
+        document.querySelectorAll('.category-badge i, .btn i, nav ul li a i, header h1 i, .card-header h2 i').forEach(icon => {
+            icon.style.display = 'flex';
+            icon.style.alignItems = 'center';
+            icon.style.justifyContent = 'center';
+        });
+    </script>
+</body>
+</html>
