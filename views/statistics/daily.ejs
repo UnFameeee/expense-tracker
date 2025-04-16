@@ -36,7 +36,6 @@
             <div class="form-group">
                 <label for="date"><i class="fas fa-calendar"></i> Chọn ngày:</label>
                 <input type="date" id="date" name="date" value="<%= date.toISOString().split('T')[0] %>" onchange="this.form.submit()">
-                <input type="hidden" id="server-date" value="<%= date.toISOString() %>">
             </div>
         </form>
     </div>
@@ -130,25 +129,6 @@
 
 <% if (categoryTotals && categoryTotals.length > 0) { %>
 <script>
-    // Set date input value in client's local timezone
-    const serverDate = document.getElementById('server-date')?.value;
-    if (serverDate) {
-        const date = new Date(serverDate);
-        const localDateString = date.toISOString().split('T')[0];
-        
-        // Set date value immediately
-        if (document.getElementById('date')) {
-            document.getElementById('date').value = localDateString;
-        }
-    }
-    
-    // Also set when DOM is fully loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        const serverDate = new Date(document.getElementById('server-date').value);
-        const localDateString = serverDate.toISOString().split('T')[0];
-        document.getElementById('date').value = localDateString;
-    });
-    
     // Biểu đồ phân bố chi tiêu theo danh mục
     const categoryCtx = document.getElementById('categoryPieChart').getContext('2d');
     const categoryData = {

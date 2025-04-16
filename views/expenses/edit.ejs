@@ -29,8 +29,7 @@
 
         <div class="form-group">
             <label for="date"><i class="far fa-calendar-alt"></i> Date:</label>
-            <input type="date" id="date" name="date" required>
-            <input type="hidden" id="server-date" value="<%= expense.date.toISOString() %>">
+            <input type="date" id="date" name="date" value="<%= expense.date.toISOString().split('T')[0] %>" required>
         </div>
 
         <div class="form-actions">
@@ -41,26 +40,6 @@
 </div>
 
 <script>
-    // Set date from server but adjusted to client's timezone
-    const serverDate = document.getElementById('server-date')?.value;
-    if (serverDate) {
-        const date = new Date(serverDate);
-        const localDateString = date.toISOString().split('T')[0];
-        
-        // Set date value immediately
-        if (document.getElementById('date')) {
-            document.getElementById('date').value = localDateString;
-        }
-    }
-    
-    // Also set when DOM is fully loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        const serverDate = document.getElementById('server-date').value;
-        const date = new Date(serverDate);
-        const localDateString = date.toISOString().split('T')[0];
-        document.getElementById('date').value = localDateString;
-    });
-
     // Input focus effect
     document.querySelectorAll('input, select').forEach(input => {
         input.addEventListener('focus', () => {
