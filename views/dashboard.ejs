@@ -1,0 +1,78 @@
+<h2 class="mb-4">Quản lý chi tiêu</h2>
+<script>
+  // Nếu không có token, tự động chuyển về login
+  if (!localStorage.getItem('token')) {
+    window.location.href = '/login';
+  }
+</script>
+<form id="expense-form" class="row g-3 mb-4">
+  <div class="col-md-4">
+    <input type="number" id="amount" class="form-control" placeholder="Số tiền" required />
+  </div>
+  <div class="col-md-4">
+    <input type="text" id="description" class="form-control" placeholder="Mô tả" required />
+  </div>
+  <div class="col-md-3">
+    <input type="date" id="date" class="form-control" required />
+  </div>
+  <div class="col-md-1 d-grid">
+    <button type="submit" class="btn btn-success">Thêm</button>
+  </div>
+</form>
+<ul id="expense-list" class="list-group mb-3"></ul>
+<div class="text-end">
+  <strong>Tổng chi: <span id="total">0</span> VNĐ</strong>
+</div>
+<script>
+  function getToken() {
+    return localStorage.getItem('token');
+  }
+  function fetchExpenses() {
+    fetch('/api/expenses', {
+      headers: { 'Authorization': 'Bearer ' + getToken() }
+    })
+      .then(res => {
+        if(res.status === 401) {
+          window.location.href = '/login';
+          return [];
+        }
+        return res.json();
+      })
+      .then(data => {
+        const list = document.getElementById('expense-list');
+        let total = 0;
+        list.innerHTML = '';
+        data.forEach(item => {
+          total += item.amount;
+          const li = document.createElement('li');
+          li.className = 'list-group-item d-flex justify-content-between align-items-center';
+          li.innerHTML = `<span>${item.date} - ${item.description}</span><span>${item.amount.toLocaleString()} VNĐ</span>`;
+          list.appendChild(li);
+        });
+        document.getElementById('total').textContent = total.toLocaleString();
+      });
+  }
+  document.getElementById('expense-form').onsubmit = function(e) {
+    e.preventDefault();
+    const amount = parseInt(document.getElementById('amount').value);
+    const description = document.getElementById('description').value;
+    const date = document.getElementById('date').value;
+    fetch('/api/expenses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getToken()
+      },
+      body: JSON.stringify({ amount, description, date })
+    })
+    .then(res => {
+      if(res.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+      document.getElementById('expense-form').reset();
+      fetchExpenses();
+    });
+  };
+  fetchExpenses();
+</script>
