@@ -5,20 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #72d1a8 0%, #72d1a8 100%);
+            --bs-primary: #72d1a8 !important;
+            --primary: #72d1a8 !important;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition-all: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .navbar {
+            background: var(--primary-gradient) !important;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .navbar .navbar-brand,
+        .navbar .nav-link,
+        .navbar .btn-outline-light {
+            color: #fff !important;
+        }
+        
+        .btn-primary,
+        .bg-primary,
+        .text-primary {
+            background-color: #72d1a8 !important;
+            border-color: #72d1a8 !important;
+            color: #fff !important;
+        }
+        
+        .btn-outline-primary {
+            color: #72d1a8 !important;
+            border-color: #72d1a8 !important;
+        }
+        
+        .btn-outline-primary:hover,
+        .btn-outline-primary:focus {
+            background-color: #72d1a8 !important;
+            color: #fff !important;
+        }
+        
+        .feature-icon.bg-primary {
+            background-color: #72d1a8 !important;
+        }
+        
+        .text-primary {
+            color: #72d1a8 !important;
+        }
+        
+        /* Đã xoá hoàn toàn dark mode */
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
       <div class="container">
-        <a class="navbar-brand" href="/">Expense Tracker</a>
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav ms-auto">
-            <% if (user) { %>
-              <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
-              <li class="nav-item"><a class="nav-link" href="#" id="logoutBtn">Đăng xuất</a></li>
-            <% } else { %>
-              <li class="nav-item"><a class="nav-link" href="/login">Đăng nhập</a></li>
-            <% } %>
-          </ul>
+        <a class="navbar-brand fw-bold" href="/">Expense Tracker</a>
+        <div class="d-flex align-items-center">
+          <% if (user) { %>
+            <a href="/dashboard" class="btn btn-sm btn-outline-light me-2">Dashboard</a>
+            <a href="#" id="logoutBtn" class="btn btn-sm btn-outline-light">
+              <i class="bi bi-box-arrow-right"></i>
+            </a>
+          <% } else { %>
+            <a href="/login" class="btn btn-sm btn-outline-light">Login</a>
+          <% } %>
         </div>
       </div>
     </nav>
@@ -27,8 +77,10 @@
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+      // Logout
       if(document.getElementById('logoutBtn')){
-        document.getElementById('logoutBtn').onclick = function() {
+        document.getElementById('logoutBtn').onclick = function(e) {
+          e.preventDefault();
           localStorage.removeItem('token');
           window.location.href = '/login';
         }

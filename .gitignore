@@ -136,3 +136,4 @@ dist
 .pnp.*
 
 /prisma/generated
+.DS_Store

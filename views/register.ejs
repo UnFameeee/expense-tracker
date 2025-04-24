@@ -6,29 +6,38 @@
         <p class="mb-0 mt-2">Quản lý chi tiêu thông minh</p>
       </div>
       <div class="card-body p-4">
-        <h4 class="fw-bold text-center mb-4">Đăng nhập</h4>
-        <form id="loginForm">
+        <h4 class="fw-bold text-center mb-4">Đăng ký tài khoản</h4>
+        <form id="registerForm">
           <div class="mb-3">
             <label for="username" class="form-label">Tên đăng nhập</label>
             <div class="input-group">
               <span class="input-group-text"><i class="bi bi-person"></i></span>
-              <input type="text" class="form-control" id="username" placeholder="Nhập tên đăng nhập" required>
+              <input type="text" class="form-control" id="username" placeholder="Nhập tên đăng nhập" required minlength="4">
             </div>
+            <div class="form-text">Tối thiểu 4 ký tự</div>
           </div>
-          <div class="mb-4">
+          <div class="mb-3">
             <label for="password" class="form-label">Mật khẩu</label>
             <div class="input-group">
               <span class="input-group-text"><i class="bi bi-lock"></i></span>
-              <input type="password" class="form-control" id="password" placeholder="Nhập mật khẩu" required>
+              <input type="password" class="form-control" id="password" placeholder="Nhập mật khẩu" required minlength="6">
+            </div>
+            <div class="form-text">Tối thiểu 6 ký tự</div>
+          </div>
+          <div class="mb-4">
+            <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+              <input type="password" class="form-control" id="confirmPassword" placeholder="Nhập lại mật khẩu" required>
             </div>
           </div>
           <button type="submit" class="btn btn-primary w-100">
-            <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập
+            <i class="bi bi-person-plus me-2"></i> Đăng ký
           </button>
         </form>
-        <div id="loginError" class="alert alert-danger mt-3" style="display:none"></div>
+        <div id="registerError" class="alert alert-danger mt-3" style="display:none"></div>
         <div class="text-center mt-4">
-          <p>Chưa có tài khoản? <a href="/register" class="text-decoration-none">Đăng ký ngay</a></p>
+          <p>Đã có tài khoản? <a href="/login" class="text-decoration-none">Đăng nhập ngay</a></p>
         </div>
       </div>
     </div>
@@ -36,10 +45,18 @@
 </div>
 
 <script>
-  document.getElementById('loginForm').onsubmit = async function(e) {
+  document.getElementById('registerForm').onsubmit = async function(e) {
     e.preventDefault();
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    // Client-side validation
+    if (password !== confirmPassword) {
+      document.getElementById('registerError').style.display = 'block';
+      document.getElementById('registerError').innerText = 'Mật khẩu xác nhận không khớp';
+      return;
+    }
     
     // Hiển thị trạng thái đang xử lý
     const submitBtn = this.querySelector('button[type="submit"]');
@@ -48,7 +65,7 @@
     submitBtn.disabled = true;
     
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({username, password})
@@ -60,15 +77,15 @@
         localStorage.setItem('token', data.token);
         window.location.href = '/dashboard';
       } else {
-        document.getElementById('loginError').style.display = 'block';
-        document.getElementById('loginError').innerText = data.error || 'Sai tài khoản hoặc mật khẩu';
+        document.getElementById('registerError').style.display = 'block';
+        document.getElementById('registerError').innerText = data.error || 'Đăng ký thất bại';
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
       }
     } catch (err) {
-      document.getElementById('loginError').style.display = 'block';
-      document.getElementById('loginError').innerText = 'Lỗi kết nối server!';
-      console.error('Login fetch error:', err);
+      document.getElementById('registerError').style.display = 'block';
+      document.getElementById('registerError').innerText = 'Lỗi kết nối server!';
+      console.error('Register fetch error:', err);
       submitBtn.innerHTML = originalText;
       submitBtn.disabled = false;
     }

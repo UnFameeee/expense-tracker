@@ -32,6 +32,11 @@ router.get('/login', (req, res) => {
   renderWithLayout(res, 'login', { title: 'Đăng nhập', user: null });
 });
 
+// Register page
+router.get('/register', (req, res) => {
+  renderWithLayout(res, 'register', { title: 'Đăng ký', user: null });
+});
+
 // Dashboard page (frontend sẽ kiểm tra JWT)
 router.get('/dashboard', (req, res) => {
   renderWithLayout(res, 'dashboard', { title: 'Dashboard', user: null });

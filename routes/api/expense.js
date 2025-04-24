@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllExpenses, addExpense } = require('../../services/expenseService');
+const { getAllExpenses, addExpense, updateExpense, deleteExpense } = require('../../services/expenseService');
 
 // Middleware xác thực JWT (dùng lại từ app.js)
 const jwt = require('jsonwebtoken');
@@ -31,14 +31,60 @@ router.get('/', authMiddleware, async (req, res) => {
 // POST /api/expenses
 router.post('/', authMiddleware, async (req, res) => {
   const { amount, description, date } = req.body;
+  
+  // Validation
   if (!amount || !description || !date) {
     return res.status(400).json({ error: 'Thiếu thông tin!' });
   }
+  
   try {
-    await addExpense({ amount, description, date, username: req.user.username });
-    res.status(201).json({ success: true });
+    const newExpense = await addExpense({ amount, description, date, username: req.user.username });
+    res.status(201).json({ success: true, expense: newExpense });
   } catch (err) {
-    res.status(500).json({ error: 'Lỗi lưu dữ liệu vào MySQL' });
+    console.error('Lỗi khi thêm expense:', err);
+    res.status(500).json({ error: 'Lỗi lưu dữ liệu vào database', details: err.message });
+  }
+});
+
+// PUT /api/expenses/:id - Cập nhật khoản chi tiết
+router.put('/:id', authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const { amount, description, date } = req.body;
+  
+  // Validation
+  if (!amount || !description || !date) {
+    return res.status(400).json({ error: 'Thiếu thông tin!' });
+  }
+  
+  try {
+    const updatedExpense = await updateExpense(
+      id, 
+      { amount, description, date }, 
+      req.user.username
+    );
+    res.json({ success: true, expense: updatedExpense });
+  } catch (err) {
+    console.error('Lỗi khi cập nhật expense:', err);
+    if (err.message.includes('không tồn tại')) {
+      return res.status(404).json({ error: err.message });
+    }
+    res.status(500).json({ error: 'Lỗi cập nhật expense', details: err.message });
+  }
+});
+
+// DELETE /api/expenses/:id - Xóa khoản chi tiết
+router.delete('/:id', authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    await deleteExpense(id, req.user.username);
+    res.json({ success: true, message: 'Đã xóa khoản chi tiết thành công' });
+  } catch (err) {
+    console.error('Lỗi khi xóa expense:', err);
+    if (err.message.includes('không tồn tại')) {
+      return res.status(404).json({ error: err.message });
+    }
+    res.status(500).json({ error: 'Lỗi xóa expense', details: err.message });
   }
 });
 
