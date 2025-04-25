@@ -1,0 +1,436 @@
+<div class="row">
+  <!-- Tổng quan cân đối thu chi -->
+  <div class="col-md-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Cân đối thu - chi</h5>
+        <div class="btn-group btn-group-sm">
+          <button type="button" class="btn btn-outline-secondary active" data-period="month">Tháng</button>
+          <button type="button" class="btn btn-outline-secondary" data-period="year">Năm</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="balance-summary" class="p-3">
+          <!-- Nội dung cân đối thu chi sẽ được load bằng JavaScript -->
+          <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Đang tải...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chi tiêu gần đây -->
+  <div class="col-md-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Chi tiêu gần đây</h5>
+        <a href="/expenses" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+      </div>
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush" id="recent-expenses">
+          <!-- Danh sách chi tiêu gần đây sẽ được load bằng JavaScript -->
+          <li class="list-group-item text-center text-muted py-3">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Đang tải...</span>
+            </div>
+            <span class="ms-2">Đang tải dữ liệu...</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Thống kê chi tiêu theo danh mục -->
+  <div class="col-md-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="mb-0">Chi tiêu theo danh mục</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="expense-category-chart" height="250"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trạng thái ngân sách -->
+  <div class="col-md-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Trạng thái ngân sách</h5>
+        <a href="/budgets" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+      </div>
+      <div class="card-body p-0">
+        <div id="budget-status">
+          <!-- Trạng thái ngân sách sẽ được load bằng JavaScript -->
+          <div class="text-center py-4">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Đang tải...</span>
+            </div>
+            <span class="ms-2">Đang tải dữ liệu...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const token = localStorage.getItem('token');
+
+  // Tải cân đối thu chi
+  function loadBalanceSummary(period = 'month') {
+    fetch(`/api/incomes/balance?period=${period}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Không thể tải dữ liệu cân đối thu chi');
+      return response.json();
+    })
+    .then(balance => {
+      const balanceSummary = document.getElementById('balance-summary');
+      
+      const balanceClass = balance.isPositive ? 'balance-positive' : 'balance-negative';
+      const balanceIcon = balance.isPositive ? 'bi-emoji-smile' : 'bi-emoji-frown';
+      
+      balanceSummary.innerHTML = `
+        <div class="balance-card ${balanceClass}">
+          <div class="balance-title">
+            <i class="bi ${balanceIcon}"></i> Cân đối ${balance.period}
+          </div>
+          <div class="balance-amount">${formatCurrency(balance.balance)}</div>
+          <div class="balance-details">
+            <div class="balance-income">
+              <span>Thu nhập</span>
+              <span class="balance-income-amount">${formatCurrency(balance.totalIncome)}</span>
+            </div>
+            <div class="balance-expense">
+              <span>Chi tiêu</span>
+              <span class="balance-expense-amount">${formatCurrency(balance.totalExpense)}</span>
+            </div>
+          </div>
+          <div class="balance-savings">
+            <span>Tỉ lệ tiết kiệm: <span class="balance-savings-rate">${balance.savingsRate}%</span></span>
+          </div>
+        </div>
+      `;
+    })
+    .catch(error => {
+      console.error('Lỗi khi tải cân đối thu chi:', error);
+      const balanceSummary = document.getElementById('balance-summary');
+      balanceSummary.innerHTML = '<div class="text-center text-muted">Không thể tải dữ liệu cân đối thu chi</div>';
+    });
+  }
+
+  // Tải chi tiêu gần đây
+  function loadRecentExpenses() {
+    fetch('/api/expenses?limit=5', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Không thể tải dữ liệu chi tiêu');
+      return response.json();
+    })
+    .then(expenses => {
+      const recentExpenses = document.getElementById('recent-expenses');
+      
+      if (expenses.length === 0) {
+        recentExpenses.innerHTML = '<li class="list-group-item text-center text-muted py-3">Chưa có chi tiêu nào</li>';
+        return;
+      }
+      
+      recentExpenses.innerHTML = '';
+      
+      expenses.forEach(expense => {
+        // Xác định icon cho danh mục
+        let categoryIcon = expense.category ? expense.category.icon : 'bi-tag';
+        let categoryColor = expense.category ? expense.category.color : '#6c757d';
+        let categoryName = expense.category ? expense.category.name : 'Chưa phân loại';
+        
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.innerHTML = `
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="mb-1">
+                <span class="me-2" style="color: ${categoryColor}">
+                  <i class="bi ${categoryIcon}"></i>
+                </span>
+                <span>${expense.description}</span>
+              </div>
+              <small class="text-muted">
+                <i class="bi bi-calendar3"></i> ${formatDate(expense.date)}
+              </small>
+            </div>
+            <div>
+              <span class="text-danger fw-bold">${formatCurrency(expense.amount)}</span>
+            </div>
+          </div>
+        `;
+        
+        recentExpenses.appendChild(li);
+      });
+    })
+    .catch(error => {
+      console.error('Lỗi khi tải chi tiêu gần đây:', error);
+      const recentExpenses = document.getElementById('recent-expenses');
+      recentExpenses.innerHTML = '<li class="list-group-item text-center text-muted py-3">Không thể tải dữ liệu chi tiêu</li>';
+    });
+  }
+
+  // Tải thống kê chi tiêu theo danh mục
+  function loadExpenseCategoryStats() {
+    fetch('/api/expenses/stats?period=month', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Không thể tải dữ liệu thống kê');
+      return response.json();
+    })
+    .then(stats => {
+      const ctx = document.getElementById('expense-category-chart').getContext('2d');
+      
+      // Nếu không có dữ liệu
+      if (!stats.stats || stats.stats.length === 0) {
+        // Hiển thị text thay vì biểu đồ
+        document.getElementById('expense-category-chart').parentNode.innerHTML = 
+          '<div class="text-center text-muted py-5">Chưa có dữ liệu chi tiêu theo danh mục</div>';
+        return;
+      }
+      
+      // Dữ liệu cho biểu đồ
+      const labels = stats.stats.map(stat => stat.category ? stat.category.name : 'Khác');
+      const data = stats.stats.map(stat => stat.amount);
+      const backgroundColor = stats.stats.map(stat => 
+        stat.category ? stat.category.color : '#6c757d'
+      );
+      
+      // Tạo biểu đồ
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: backgroundColor,
+            borderWidth: 1,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const value = context.raw;
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = Math.round((value / total) * 100);
+                  return `${formatCurrency(value)} (${percentage}%)`;
+                }
+              }
+            }
+          },
+          cutout: '70%'
+        }
+      });
+    })
+    .catch(error => {
+      console.error('Lỗi khi tải thống kê chi tiêu:', error);
+      document.getElementById('expense-category-chart').parentNode.innerHTML = 
+        '<div class="text-center text-muted py-5">Không thể tải dữ liệu thống kê</div>';
+    });
+  }
+
+  // Tải trạng thái ngân sách
+  function loadBudgetStatus() {
+    fetch('/api/budgets/stats', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Không thể tải dữ liệu ngân sách');
+      return response.json();
+    })
+    .then(stats => {
+      const budgetStatus = document.getElementById('budget-status');
+      
+      if (!stats || stats.length === 0) {
+        budgetStatus.innerHTML = '<div class="text-center text-muted py-3">Chưa có ngân sách nào</div>';
+        return;
+      }
+      
+      budgetStatus.innerHTML = '';
+      
+      // Hiển thị tối đa 4 ngân sách
+      const displayStats = stats.slice(0, 4);
+      
+      displayStats.forEach(stat => {
+        const budget = stat.budget;
+        const category = budget.category;
+        const percentUsed = stat.percentUsed;
+        const timeProgress = stat.timeProgress;
+        
+        // Xác định trạng thái ngân sách
+        let statusClass = 'bg-success';
+        let statusText = 'Tốt';
+        
+        if (percentUsed > 100) {
+          statusClass = 'bg-danger';
+          statusText = 'Vượt mức';
+        } else if (percentUsed > timeProgress + 10) {
+          statusClass = 'bg-warning';
+          statusText = 'Cảnh báo';
+        } else if (percentUsed < timeProgress - 20) {
+          statusClass = 'bg-success';
+          statusText = 'Tốt';
+        } else {
+          statusClass = 'bg-info';
+          statusText = 'Bình thường';
+        }
+        
+        const budgetItem = document.createElement('div');
+        budgetItem.className = 'p-3 border-bottom';
+        budgetItem.innerHTML = `
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="d-flex align-items-center">
+              <span class="me-2" style="color: ${category.color}">
+                <i class="bi ${category.icon}"></i>
+              </span>
+              <span class="fw-medium">${category.name}</span>
+            </div>
+            <span class="badge ${statusClass} rounded-pill">${statusText}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-1">
+            <small class="text-muted">Đã sử dụng</small>
+            <small>${formatCurrency(stat.totalSpent)} / ${formatCurrency(budget.amount)}</small>
+          </div>
+          <div class="progress" style="height: 6px;">
+            <div class="progress-bar ${statusClass}" role="progressbar" style="width: ${Math.min(100, percentUsed)}%" 
+                 aria-valuenow="${percentUsed}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <div class="d-flex justify-content-between mt-1">
+            <small>${percentUsed}% đã sử dụng</small>
+            <small>${stat.daysRemaining} ngày còn lại</small>
+          </div>
+        `;
+        
+        budgetStatus.appendChild(budgetItem);
+      });
+      
+      // Nếu có nhiều hơn 4 ngân sách, hiển thị nút xem thêm
+      if (stats.length > 4) {
+        const viewMoreBtn = document.createElement('div');
+        viewMoreBtn.className = 'text-center p-2';
+        viewMoreBtn.innerHTML = `
+          <a href="/budgets" class="btn btn-sm btn-link">Xem thêm ${stats.length - 4} ngân sách khác</a>
+        `;
+        budgetStatus.appendChild(viewMoreBtn);
+      }
+    })
+    .catch(error => {
+      console.error('Lỗi khi tải trạng thái ngân sách:', error);
+      const budgetStatus = document.getElementById('budget-status');
+      budgetStatus.innerHTML = '<div class="text-center text-muted py-3">Không thể tải dữ liệu ngân sách</div>';
+    });
+  }
+
+  // Xử lý khi chọn khoảng thời gian khác cho cân đối thu chi
+  document.querySelectorAll('.btn-group [data-period]').forEach(button => {
+    button.addEventListener('click', function() {
+      // Loại bỏ trạng thái active khỏi tất cả các nút
+      document.querySelectorAll('.btn-group [data-period]').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Thêm trạng thái active cho nút được click
+      this.classList.add('active');
+      
+      // Tải lại dữ liệu cân đối với khoảng thời gian mới
+      const period = this.getAttribute('data-period');
+      loadBalanceSummary(period);
+    });
+  });
+
+  // Tải dữ liệu khi trang được load
+  document.addEventListener('DOMContentLoaded', function() {
+    loadBalanceSummary();
+    loadRecentExpenses();
+    loadExpenseCategoryStats();
+    loadBudgetStatus();
+  });
+</script>
+
+<style>
+  /* CSS cho cân đối thu chi */
+  .balance-card {
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+  }
+  .balance-positive {
+    background-color: #e6fcf3;
+  }
+  .balance-negative {
+    background-color: #ffebee;
+  }
+  .balance-title {
+    font-weight: 500;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+  .balance-amount {
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
+  .balance-positive .balance-amount {
+    color: #28a745;
+  }
+  .balance-negative .balance-amount {
+    color: #e74c3c;
+  }
+  .balance-details {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 0.85rem;
+  }
+  .balance-income, .balance-expense {
+    display: flex;
+    flex-direction: column;
+  }
+  .balance-income-amount {
+    font-weight: 600;
+    color: #28a745;
+  }
+  .balance-expense-amount {
+    font-weight: 600;
+    color: #e74c3c;
+  }
+  .balance-savings {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+  .balance-savings-rate {
+    font-weight: 600;
+  }
+</style>

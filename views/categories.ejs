@@ -1,0 +1,518 @@
+<div class="row mb-4">
+  <div class="col-lg-5 col-md-6 mb-4">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Thêm danh mục mới</h5>
+      </div>
+      <div class="card-body">
+        <form id="category-form">
+          <input type="hidden" id="category-id">
+          <div class="mb-3">
+            <label for="category-name" class="form-label">Tên danh mục</label>
+            <input type="text" class="form-control" id="category-name" required>
+            <div class="invalid-feedback">Vui lòng nhập tên danh mục</div>
+          </div>
+          <div class="mb-3">
+            <label for="category-icon" class="form-label">Biểu tượng</label>
+            <select class="form-select" id="category-icon" required>
+              <option value="">-- Chọn biểu tượng --</option>
+              <option value="bi-house">Nhà cửa</option>
+              <option value="bi-cup-hot">Cà phê</option>
+              <option value="bi-basket">Siêu thị</option>
+              <option value="bi-shop">Cửa hàng</option>
+              <option value="bi-bus-front">Di chuyển</option>
+              <option value="bi-tv">Giải trí</option>
+              <option value="bi-capsule">Sức khỏe</option>
+              <option value="bi-book">Giáo dục</option>
+              <option value="bi-gift">Quà tặng</option>
+              <option value="bi-cart">Mua sắm</option>
+              <option value="bi-credit-card">Hóa đơn</option>
+              <option value="bi-cash-coin">Tiền mặt</option>
+              <option value="bi-bag">Quần áo</option>
+              <option value="bi-phone">Điện thoại</option>
+              <option value="bi-laptop">Công nghệ</option>
+              <option value="bi-airplane">Du lịch</option>
+              <option value="bi-heart">Bản thân & Tình yêu</option>
+              <option value="bi-people">Gia đình</option>
+              <option value="bi-three-dots">Khác</option>
+            </select>
+            <div class="invalid-feedback">Vui lòng chọn biểu tượng</div>
+          </div>
+          <div class="mb-3">
+            <label for="category-color" class="form-label">Màu sắc</label>
+            <input type="color" class="form-control form-control-color" id="category-color" value="#72d1a8" required>
+          </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary" id="save-category">Lưu danh mục</button>
+            <button type="button" class="btn btn-outline-secondary" id="reset-category-form">Làm mới</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7 col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Danh sách danh mục</h5>
+      </div>
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush" id="category-list">
+          <!-- Danh sách danh mục sẽ được tải bằng JavaScript -->
+          <li class="list-group-item text-center text-muted py-3">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Đang tải...</span>
+            </div>
+            <span class="ms-2">Đang tải dữ liệu...</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Thống kê chi tiêu theo danh mục</h5>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="btn-group btn-group-sm" role="group">
+              <button type="button" class="btn btn-outline-secondary active" data-period="month" id="stats-month">Tháng này</button>
+              <button type="button" class="btn btn-outline-secondary" data-period="year" id="stats-year">Năm này</button>
+              <button type="button" class="btn btn-outline-secondary" data-period="all" id="stats-all">Tất cả</button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <canvas id="category-chart" height="300"></canvas>
+          </div>
+          <div class="col-md-4">
+            <div id="category-stats" class="list-group">
+              <!-- Thống kê sẽ được tải bằng JavaScript -->
+              <div class="text-center py-4">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                  <span class="visually-hidden">Đang tải...</span>
+                </div>
+                <span class="ms-2">Đang tải dữ liệu...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal xác nhận xóa danh mục -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Xác nhận xóa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Bạn có chắc chắn muốn xóa danh mục này?</p>
+        <div class="alert alert-warning">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          Việc xóa danh mục sẽ làm mất tất cả dữ liệu liên quan.
+        </div>
+        <input type="hidden" id="delete-category-id">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-danger" id="confirm-delete-category">Xóa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const token = localStorage.getItem('token');
+  let categoryChart = null;
+  const defaultColor = '#72d1a8';
+
+  // Load categories
+  function loadCategories() {
+    fetch('/api/categories', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        return;
+      }
+      return response.json();
+    })
+    .then(categories => {
+      const categoryList = document.getElementById('category-list');
+      categoryList.innerHTML = '';
+      
+      if (categories.length === 0) {
+        categoryList.innerHTML = '<li class="list-group-item text-center text-muted py-3">Chưa có danh mục nào</li>';
+        return;
+      }
+      
+      categories.forEach(category => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.innerHTML = `
+          <div class="d-flex align-items-center">
+            <span class="category-icon me-2" style="color: ${category.color}">
+              <i class="bi ${category.icon}"></i>
+            </span>
+            <span>${category.name}</span>
+          </div>
+          <div>
+            <button class="btn btn-icon btn-light me-1 edit-category" data-id="${category.id}" title="Sửa">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+            <button class="btn btn-icon btn-light delete-category" data-id="${category.id}" title="Xóa">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        `;
+        
+        categoryList.appendChild(li);
+      });
+      
+      // Add event listeners for edit and delete buttons
+      setupCategoryButtons();
+    })
+    .catch(error => {
+      console.error('Lỗi khi tải danh mục:', error);
+      showAlert('danger', 'Không thể tải danh mục: ' + error.message);
+      document.getElementById('category-list').innerHTML = '<li class="list-group-item text-center text-danger">Lỗi khi tải danh mục</li>';
+    });
+  }
+
+  // Load category statistics
+  function loadCategoryStats(period = 'month') {
+    fetch(`/api/expenses/stats?period=${period}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        return;
+      }
+      return response.json();
+    })
+    .then(stats => {
+      if (!stats.stats || stats.stats.length === 0) {
+        document.getElementById('category-stats').innerHTML = '<div class="text-center text-muted py-3">Chưa có dữ liệu thống kê</div>';
+        document.getElementById('category-chart').parentNode.innerHTML = '<div class="text-center text-muted py-5">Chưa có dữ liệu thống kê</div>';
+        return;
+      }
+      
+      // Cập nhật thống kê
+      const categoryStats = document.getElementById('category-stats');
+      categoryStats.innerHTML = '';
+      
+      // Sắp xếp theo số tiền giảm dần
+      const sortedStats = [...stats.stats].sort((a, b) => b.amount - a.amount);
+      
+      sortedStats.forEach(stat => {
+        const categoryName = stat.category ? stat.category.name : 'Khác';
+        const categoryColor = stat.category ? stat.category.color : '#6c757d';
+        const categoryIcon = stat.category ? stat.category.icon : 'bi-tag';
+        const percentage = stats.totalExpense > 0 ? Math.round((stat.amount / stats.totalExpense) * 100) : 0;
+        
+        const item = document.createElement('div');
+        item.className = 'list-group-item';
+        item.innerHTML = `
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <span style="color: ${categoryColor}" class="me-2">
+                <i class="bi ${categoryIcon}"></i>
+              </span>
+              <span>${categoryName}</span>
+            </div>
+            <span class="badge bg-light text-dark">${percentage}%</span>
+          </div>
+          <div class="d-flex justify-content-between mt-1">
+            <small class="text-muted">${formatCurrency(stat.amount)}</small>
+          </div>
+          <div class="progress mt-1" style="height: 5px;">
+            <div class="progress-bar" role="progressbar" style="width: ${percentage}%; background-color: ${categoryColor}" 
+                 aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        `;
+        
+        categoryStats.appendChild(item);
+      });
+      
+      // Cập nhật biểu đồ
+      updateCategoryChart(stats);
+    })
+    .catch(error => {
+      console.error('Lỗi khi tải thống kê:', error);
+      showAlert('danger', 'Không thể tải thống kê: ' + error.message);
+      document.getElementById('category-stats').innerHTML = '<div class="text-center text-danger py-3">Lỗi khi tải thống kê</div>';
+    });
+  }
+
+  // Update category chart
+  function updateCategoryChart(stats) {
+    const ctx = document.getElementById('category-chart').getContext('2d');
+    
+    // Nếu đã có biểu đồ, hủy bỏ nó
+    if (categoryChart) {
+      categoryChart.destroy();
+    }
+    
+    const labels = stats.stats.map(stat => stat.category ? stat.category.name : 'Khác');
+    const data = stats.stats.map(stat => stat.amount);
+    const backgroundColor = stats.stats.map(stat => stat.category ? stat.category.color : '#6c757d');
+    
+    categoryChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          backgroundColor: backgroundColor,
+          borderWidth: 1,
+          borderColor: '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              boxWidth: 15,
+              padding: 15
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const value = context.raw;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = Math.round((value / total) * 100);
+                return `${formatCurrency(value)} (${percentage}%)`;
+              }
+            }
+          }
+        },
+        cutout: '65%'
+      }
+    });
+  }
+
+  // Setup category buttons
+  function setupCategoryButtons() {
+    // Edit button
+    document.querySelectorAll('.edit-category').forEach(button => {
+      button.addEventListener('click', function() {
+        const categoryId = this.getAttribute('data-id');
+        editCategory(categoryId);
+      });
+    });
+    
+    // Delete button
+    document.querySelectorAll('.delete-category').forEach(button => {
+      button.addEventListener('click', function() {
+        const categoryId = this.getAttribute('data-id');
+        document.getElementById('delete-category-id').value = categoryId;
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
+        deleteModal.show();
+      });
+    });
+  }
+
+  // Edit category
+  function editCategory(categoryId) {
+    fetch(`/api/categories/${categoryId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        return;
+      }
+      return response.json();
+    })
+    .then(category => {
+      if (category) {
+        document.getElementById('category-id').value = category.id;
+        document.getElementById('category-name').value = category.name;
+        document.getElementById('category-icon').value = category.icon;
+        document.getElementById('category-color').value = category.color;
+        
+        document.getElementById('save-category').textContent = 'Cập nhật danh mục';
+        document.querySelector('.card-header h5').textContent = 'Chỉnh sửa danh mục';
+      }
+    })
+    .catch(error => {
+      console.error('Lỗi khi tải thông tin danh mục:', error);
+      showAlert('danger', 'Không thể tải thông tin danh mục: ' + error.message);
+    });
+  }
+
+  // Save category form submit
+  document.getElementById('category-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const categoryId = document.getElementById('category-id').value;
+    const name = document.getElementById('category-name').value;
+    const icon = document.getElementById('category-icon').value;
+    const color = document.getElementById('category-color').value;
+    
+    // Validate form
+    if (!validateCategoryForm()) return;
+    
+    const url = categoryId ? `/api/categories/${categoryId}` : '/api/categories';
+    const method = categoryId ? 'PUT' : 'POST';
+    
+    fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        name,
+        icon,
+        color
+      })
+    })
+    .then(response => {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        return;
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        showAlert('success', categoryId ? 'Danh mục đã được cập nhật' : 'Danh mục đã được tạo');
+        resetCategoryForm();
+        loadCategories();
+        loadCategoryStats(getActivePeriod());
+      } else {
+        showAlert('danger', data.error || 'Không thể lưu danh mục');
+      }
+    })
+    .catch(error => {
+      console.error('Lỗi khi lưu danh mục:', error);
+      showAlert('danger', 'Lỗi khi lưu danh mục: ' + error.message);
+    });
+  });
+
+  // Delete category
+  document.getElementById('confirm-delete-category').addEventListener('click', function() {
+    const categoryId = document.getElementById('delete-category-id').value;
+    
+    fetch(`/api/categories/${categoryId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        return;
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        showAlert('success', 'Danh mục đã được xóa');
+        bootstrap.Modal.getInstance(document.getElementById('deleteCategoryModal')).hide();
+        loadCategories();
+        loadCategoryStats(getActivePeriod());
+      } else {
+        showAlert('danger', data.error || 'Không thể xóa danh mục');
+      }
+    })
+    .catch(error => {
+      console.error('Lỗi khi xóa danh mục:', error);
+      showAlert('danger', 'Lỗi khi xóa danh mục: ' + error.message);
+    });
+  });
+
+  // Reset category form
+  document.getElementById('reset-category-form').addEventListener('click', resetCategoryForm);
+
+  function resetCategoryForm() {
+    document.getElementById('category-form').reset();
+    document.getElementById('category-id').value = '';
+    document.getElementById('category-color').value = defaultColor;
+    document.getElementById('save-category').textContent = 'Lưu danh mục';
+    document.querySelector('.card-header h5').textContent = 'Thêm danh mục mới';
+  }
+
+  // Validate category form
+  function validateCategoryForm() {
+    const nameInput = document.getElementById('category-name');
+    const iconInput = document.getElementById('category-icon');
+    let isValid = true;
+    
+    if (!nameInput.value.trim()) {
+      nameInput.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      nameInput.classList.remove('is-invalid');
+    }
+    
+    if (!iconInput.value) {
+      iconInput.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      iconInput.classList.remove('is-invalid');
+    }
+    
+    return isValid;
+  }
+
+  // Period selection for stats
+  document.querySelectorAll('[data-period]').forEach(button => {
+    button.addEventListener('click', function() {
+      // Remove active class from all buttons
+      document.querySelectorAll('[data-period]').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Add active class to clicked button
+      this.classList.add('active');
+      
+      // Load stats for selected period
+      loadCategoryStats(this.getAttribute('data-period'));
+    });
+  });
+
+  // Get active period
+  function getActivePeriod() {
+    const activeButton = document.querySelector('[data-period].active');
+    return activeButton ? activeButton.getAttribute('data-period') : 'month';
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', function() {
+    loadCategories();
+    loadCategoryStats('month');
+  });
+</script>

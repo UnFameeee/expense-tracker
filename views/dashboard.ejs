@@ -81,6 +81,159 @@
       color: #e74c3c !important;
     }
     
+    /* CSS cho budget */
+    .budget-item {
+      padding: 15px;
+      border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+    .budget-item:last-child {
+      border-bottom: none;
+    }
+    .budget-progress {
+      height: 8px;
+      border-radius: 4px;
+      margin: 8px 0;
+      background-color: #e9ecef;
+    }
+    .budget-progress-bar {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    .budget-status-normal .budget-progress-bar {
+      background-color: #72d1a8;
+    }
+    .budget-status-warning .budget-progress-bar {
+      background-color: #ffc107;
+    }
+    .budget-status-exceeded .budget-progress-bar {
+      background-color: #e74c3c;
+    }
+    .budget-status-good .budget-progress-bar {
+      background-color: #28a745;
+    }
+    .budget-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #6c757d;
+    }
+    .budget-actions {
+      margin-top: 10px;
+    }
+    .budget-category {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .budget-category i {
+      margin-right: 5px;
+    }
+    .budget-title {
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+    .budget-amount {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .budget-status-exceeded .budget-amount {
+      color: #e74c3c;
+    }
+    
+    /* CSS cho income */
+    .income-item {
+      padding: 15px;
+      border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+    .income-item:last-child {
+      border-bottom: none;
+    }
+    .income-source {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    .income-source i {
+      margin-right: 5px;
+    }
+    .income-amount {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #28a745;
+    }
+    .income-date {
+      font-size: 0.85rem;
+      color: #6c757d;
+    }
+    .income-actions {
+      margin-top: 10px;
+    }
+    .income-recurring {
+      font-size: 0.8rem;
+      background-color: #e6fcf3;
+      color: #28a745;
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin-left: 5px;
+    }
+    
+    /* CSS cho balance */
+    .balance-card {
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+    .balance-positive {
+      background-color: #e6fcf3;
+    }
+    .balance-negative {
+      background-color: #ffebee;
+    }
+    .balance-title {
+      font-weight: 500;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+    .balance-amount {
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+    .balance-positive .balance-amount {
+      color: #28a745;
+    }
+    .balance-negative .balance-amount {
+      color: #e74c3c;
+    }
+    .balance-details {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 0.85rem;
+    }
+    .balance-income, .balance-expense {
+      display: flex;
+      flex-direction: column;
+    }
+    .balance-income-amount {
+      font-weight: 600;
+      color: #28a745;
+    }
+    .balance-expense-amount {
+      font-weight: 600;
+      color: #e74c3c;
+    }
+    .balance-savings {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: #6c757d;
+    }
+    .balance-savings-rate {
+      font-weight: 600;
+    }
+    
     /* CSS cho modal */
     .modal-content {
       border-radius: 10px;
@@ -130,6 +283,13 @@
                 <label class="form-label">Ngày</label>
                 <input type="date" id="date" class="form-control" required>
               </div>
+              <div class="col-md-12">
+                <label class="form-label">Danh mục</label>
+                <select id="categoryId" class="form-select">
+                  <option value="">-- Chọn danh mục --</option>
+                  <!-- Categories will be loaded here -->
+                </select>
+              </div>
               <div class="col-12">
                 <button type="submit" class="btn btn-primary">
                   <i class="bi bi-plus-circle me-1"></i>
@@ -148,6 +308,7 @@
                 <thead class="bg-light">
                   <tr>
                     <th class="ps-4">Mô tả</th>
+                    <th>Danh mục</th>
                     <th>Ngày</th>
                     <th class="text-end">Số tiền</th>
                     <th width="100" class="text-center">Thao tác</th>
@@ -170,6 +331,68 @@
             <h6 class="text-white-50 mb-2">Tổng chi tháng này</h6>
             <div id="total-amount" class="amount mb-2">0đ</div>
             <small class="text-white-50">Cập nhật lúc <%= new Date().toLocaleTimeString('vi-VN') %></small>
+          </div>
+        </div>
+        
+        <!-- Category Management -->
+        <div class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Danh mục chi tiêu</h5>
+            <button id="add-category-btn" class="btn btn-sm btn-primary">
+              <i class="bi bi-plus"></i> Thêm mới
+            </button>
+          </div>
+          <div class="card-body p-0">
+            <ul id="category-list" class="list-group list-group-flush">
+              <!-- Categories will be loaded here -->
+            </ul>
+          </div>
+          <div class="card-footer text-center">
+            <button id="add-default-categories" class="btn btn-sm btn-outline-secondary">
+              <i class="bi bi-arrow-repeat"></i> Tạo danh mục mặc định
+            </button>
+          </div>
+        </div>
+        
+        <!-- Budget Management -->
+        <div class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Ngân sách</h5>
+            <button id="add-budget-btn" class="btn btn-sm btn-primary">
+              <i class="bi bi-plus"></i> Thêm mới
+            </button>
+          </div>
+          <div class="card-body p-0">
+            <div id="budget-list" class="list-group list-group-flush">
+              <!-- Budgets will be loaded here -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Income Management -->
+        <div class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Thu nhập</h5>
+            <button id="add-income-btn" class="btn btn-sm btn-primary">
+              <i class="bi bi-plus"></i> Thêm mới
+            </button>
+          </div>
+          <div class="card-body p-0">
+            <div id="income-list" class="list-group list-group-flush">
+              <!-- Incomes will be loaded here -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Balance Summary -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Cân đối thu - chi</h5>
+          </div>
+          <div class="card-body p-0">
+            <div id="balance-summary" class="p-3">
+              <!-- Balance summary will be loaded here -->
+            </div>
           </div>
         </div>
       </div>
@@ -202,6 +425,13 @@
               <label class="form-label">Ngày</label>
               <input type="date" id="edit-date" class="form-control" required>
             </div>
+            <div class="col-md-12 mb-3">
+              <label class="form-label">Danh mục</label>
+              <select id="edit-categoryId" class="form-select">
+                <option value="">-- Chọn danh mục --</option>
+                <!-- Categories will be loaded here -->
+              </select>
+            </div>
           </form>
         </div>
         <div class="modal-footer">
@@ -232,6 +462,244 @@
     </div>
   </div>
 
+  <!-- Add/Edit Category Modal -->
+  <div class="modal fade" id="categoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="categoryModalLabel">Thêm danh mục</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="category-form" class="row g-3">
+            <input type="hidden" id="category-id">
+            <div class="col-md-12 mb-3">
+              <label class="form-label">Tên danh mục</label>
+              <input type="text" id="category-name" class="form-control" required minlength="2">
+              <div class="invalid-feedback">Tên danh mục phải có ít nhất 2 ký tự</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Màu sắc</label>
+              <input type="color" id="category-color" class="form-control form-control-color w-100" value="#72d1a8">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Biểu tượng</label>
+              <select id="category-icon" class="form-select">
+                <option value="bi-tag">⚪ Tag</option>
+                <option value="bi-cup-hot">☕ Đồ uống</option>
+                <option value="bi-cart">🛒 Mua sắm</option>
+                <option value="bi-car-front">🚗 Phương tiện</option>
+                <option value="bi-house">🏠 Nhà cửa</option>
+                <option value="bi-receipt">📝 Hóa đơn</option>
+                <option value="bi-controller">🎮 Giải trí</option>
+                <option value="bi-hospital">🏥 Y tế</option>
+                <option value="bi-book">📚 Giáo dục</option>
+                <option value="bi-cash">💰 Tiền mặt</option>
+                <option value="bi-gift">🎁 Quà tặng</option>
+                <option value="bi-three-dots">⋯ Khác</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" id="save-category" class="btn btn-primary">Lưu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Category Confirmation Modal -->
+  <div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Xác nhận xóa danh mục</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Bạn có chắc chắn muốn xóa danh mục này?</p>
+          <p><small class="text-muted">Các chi tiêu thuộc danh mục này sẽ không bị xóa.</small></p>
+          <input type="hidden" id="delete-category-id">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" id="confirm-delete-category" class="btn btn-danger">Xóa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Budget Modal -->
+  <div class="modal fade" id="budgetModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="budgetModalLabel">Thêm ngân sách</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="budget-form" class="row g-3">
+            <input type="hidden" id="budget-id">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Số tiền ngân sách</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                <input type="number" id="budget-amount" class="form-control" required min="1">
+              </div>
+              <div class="invalid-feedback">Số tiền ngân sách không hợp lệ</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Chu kỳ</label>
+              <select id="budget-period" class="form-select" required>
+                <option value="week">Hàng tuần</option>
+                <option value="month" selected>Hàng tháng</option>
+                <option value="year">Hàng năm</option>
+              </select>
+            </div>
+            <div class="col-md-12 mb-3">
+              <label class="form-label">Danh mục</label>
+              <select id="budget-categoryId" class="form-select" required>
+                <option value="">-- Chọn danh mục --</option>
+                <!-- Categories will be loaded here -->
+              </select>
+              <div class="invalid-feedback">Vui lòng chọn danh mục</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Ngày bắt đầu</label>
+              <input type="date" id="budget-startDate" class="form-control" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Ngày kết thúc (tùy chọn)</label>
+              <input type="date" id="budget-endDate" class="form-control">
+            </div>
+            <div class="col-md-12 mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="budget-isRecurring" checked>
+                <label class="form-check-label" for="budget-isRecurring">
+                  Lặp lại hàng chu kỳ
+                </label>
+                <small class="form-text text-muted d-block">Nếu bạn chọn tùy chọn này, ngân sách sẽ tự động lặp lại hàng chu kỳ</small>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" id="save-budget" class="btn btn-primary">Lưu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Budget Confirmation Modal -->
+  <div class="modal fade" id="deleteBudgetModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Xác nhận xóa ngân sách</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Bạn có chắc chắn muốn xóa ngân sách này?</p>
+          <input type="hidden" id="delete-budget-id">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" id="confirm-delete-budget" class="btn btn-danger">Xóa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Income Modal -->
+  <div class="modal fade" id="incomeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="incomeModalLabel">Thu nhập</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="income-form" class="row g-3">
+            <input type="hidden" id="income-id">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Số tiền thu nhập</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                <input type="number" id="income-amount" class="form-control" required min="1">
+              </div>
+              <div class="invalid-feedback">Số tiền thu nhập không hợp lệ</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Nguồn thu nhập</label>
+              <select id="income-source" class="form-select" required>
+                <option value="">-- Chọn nguồn thu --</option>
+                <option value="salary">Lương</option>
+                <option value="bonus">Thưởng</option>
+                <option value="investment">Đầu tư</option>
+                <option value="freelance">Freelance</option>
+                <option value="gift">Quà tặng</option>
+                <option value="other">Khác</option>
+              </select>
+              <div class="invalid-feedback">Vui lòng chọn nguồn thu</div>
+            </div>
+            <div class="col-md-12 mb-3">
+              <label class="form-label">Mô tả</label>
+              <input type="text" id="income-description" class="form-control" required>
+              <div class="invalid-feedback">Mô tả không được để trống</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Ngày</label>
+              <input type="date" id="income-date" class="form-control" required>
+              <div class="invalid-feedback">Ngày không hợp lệ</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="form-check mt-4">
+                <input class="form-check-input" type="checkbox" id="income-isRecurring">
+                <label class="form-check-label" for="income-isRecurring">
+                  Thu nhập lặp lại
+                </label>
+              </div>
+            </div>
+            <div class="col-md-12 mb-3" id="frequency-group" style="display: none;">
+              <label class="form-label">Tần suất</label>
+              <select id="income-frequency" class="form-select">
+                <option value="weekly">Hàng tuần</option>
+                <option value="monthly" selected>Hàng tháng</option>
+                <option value="yearly">Hàng năm</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" id="save-income" class="btn btn-primary">Lưu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Income Confirmation Modal -->
+  <div class="modal fade" id="deleteIncomeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Xác nhận xóa thu nhập</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Bạn có chắc chắn muốn xóa thu nhập này?</p>
+          <input type="hidden" id="delete-income-id">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" id="confirm-delete-income" class="btn btn-danger">Xóa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // Token check
@@ -241,6 +709,17 @@
 
     function getToken() {
       return localStorage.getItem('token');
+    }
+
+    // Format currency
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    }
+
+    // Format date
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('vi-VN');
     }
 
     // Fetch expenses
@@ -264,7 +743,7 @@
           let total = 0;
           
           if (!data || data.length === 0) {
-            list.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Chưa có chi tiêu nào</td></tr>';
+            list.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Chưa có chi tiêu nào</td></tr>';
             totalAmountElement.innerText = '0đ';
             return;
           }
@@ -273,10 +752,20 @@
           data.forEach(item => {
             total += item.amount;
             const tr = document.createElement('tr');
+            
+            // Category display
+            const categoryDisplay = item.category 
+              ? `<span class="badge rounded-pill" style="background-color: ${item.category.color}">
+                  <i class="bi ${item.category.icon} me-1"></i>
+                  ${item.category.name}
+                 </span>` 
+              : '<span class="badge bg-secondary">Chưa phân loại</span>';
+            
             tr.innerHTML = `
               <td class="ps-4">${item.description}</td>
-              <td>${new Date(item.date).toLocaleDateString('vi-VN')}</td>
-              <td class="text-end amount">${item.amount.toLocaleString()}đ</td>
+              <td>${categoryDisplay}</td>
+              <td>${formatDate(item.date)}</td>
+              <td class="text-end amount">${formatCurrency(item.amount)}</td>
               <td class="text-center">
                 <button class="btn btn-icon btn-light me-1 edit-expense" data-id="${item.id}" title="Sửa">
                   <i class="bi bi-pencil-square"></i>
@@ -289,8 +778,7 @@
             list.appendChild(tr);
           });
           
-          // Cập nhật tổng số tiền
-          totalAmountElement.innerText = total.toLocaleString() + 'đ';
+          totalAmountElement.innerText = formatCurrency(total);
           
           // Gán sự kiện cho nút sửa và xóa
           setupEditButtons();
@@ -300,7 +788,7 @@
           console.error('Lỗi khi lấy dữ liệu:', err);
         });
     }
-
+    
     // Gán sự kiện cho nút sửa
     function setupEditButtons() {
       document.querySelectorAll('.edit-expense').forEach(button => {
@@ -310,8 +798,9 @@
           // Lấy thông tin từ hàng
           const row = this.closest('tr');
           const description = row.cells[0].innerText;
-          const dateString = row.cells[1].innerText;
-          const amount = row.cells[2].innerText.replace(/\D/g, '');
+          const category = row.cells[1].innerText;
+          const dateString = row.cells[2].innerText;
+          const amount = row.cells[3].innerText.replace(/\D/g, '');
           
           // Chuyển đổi ngày sang định dạng YYYY-MM-DD cho input date
           const dateParts = dateString.split('/');
@@ -322,6 +811,7 @@
           document.getElementById('edit-amount').value = amount;
           document.getElementById('edit-description').value = description;
           document.getElementById('edit-date').value = formattedDate;
+          document.getElementById('edit-categoryId').value = category;
           
           // Mở modal
           const modal = new bootstrap.Modal(document.getElementById('editExpenseModal'));
@@ -350,6 +840,7 @@
       const amount = document.getElementById('edit-amount').value;
       const description = document.getElementById('edit-description').value;
       const date = document.getElementById('edit-date').value;
+      const categoryId = document.getElementById('edit-categoryId').value;
       
       if (!amount || !description || !date) {
         alert('Vui lòng điền đầy đủ thông tin!');
@@ -363,7 +854,7 @@
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + getToken()
         },
-        body: JSON.stringify({ amount, description, date })
+        body: JSON.stringify({ amount, description, date, categoryId: categoryId || null })
       })
       .then(res => {
         if(res.status === 401) {
@@ -433,6 +924,7 @@
       const amount = document.getElementById('amount').value;
       const description = document.getElementById('description').value;
       const date = document.getElementById('date').value;
+      const categoryId = document.getElementById('categoryId').value;
 
       fetch('/api/expenses', {
         method: 'POST',
@@ -440,7 +932,12 @@
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + getToken()
         },
-        body: JSON.stringify({ amount, description, date })
+        body: JSON.stringify({ 
+          amount, 
+          description, 
+          date, 
+          categoryId: categoryId || null 
+        })
       })
         .then(res => {
           if(res.status === 401) {
@@ -452,8 +949,10 @@
         })
         .then(data => {
           if(data.success) {
+            // Reset form
             document.getElementById('amount').value = '';
             document.getElementById('description').value = '';
+            document.getElementById('categoryId').value = '';
             fetchExpenses();
           } else {
             alert(data.error || 'Có lỗi xảy ra khi thêm chi tiêu!');
@@ -471,11 +970,1040 @@
       window.location.href = '/login';
     });
 
-    // Initialize
+    // =================== Category Management ===================
+    // Load danh sách danh mục
+    function fetchCategories() {
+      fetch('/api/categories', {
+        headers: {
+          'Authorization': 'Bearer ' + getToken()
+        }
+      })
+      .then(res => {
+        if(res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          return;
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (!data || data.length === 0) {
+          document.getElementById('category-list').innerHTML = '<li class="list-group-item text-center text-muted py-3">Chưa có danh mục nào</li>';
+          return;
+        }
+
+        // Render danh sách danh mục
+        const list = document.getElementById('category-list');
+        list.innerHTML = '';
+        
+        data.forEach(category => {
+          const li = document.createElement('li');
+          li.className = 'list-group-item d-flex justify-content-between align-items-center';
+          li.innerHTML = `
+            <div class="d-flex align-items-center">
+              <span class="category-icon me-2" style="color: ${category.color}">
+                <i class="bi ${category.icon}"></i>
+              </span>
+              <span>${category.name}</span>
+            </div>
+            <div>
+              <button class="btn btn-icon btn-light me-1 edit-category" data-id="${category.id}" title="Sửa">
+                <i class="bi bi-pencil-square" style="color: ${category.color}"></i>
+              </button>
+              <button class="btn btn-icon btn-light delete-category" data-id="${category.id}" title="Xóa">
+                <i class="bi bi-trash text-danger"></i>
+              </button>
+            </div>
+          `;
+          list.appendChild(li);
+        });
+
+        // Cập nhật các dropdown select trong form thêm/sửa chi tiêu
+        updateCategoryDropdowns(data);
+        
+        // Gán sự kiện cho các nút sửa/xóa danh mục
+        setupCategoryButtons();
+      })
+      .catch(err => {
+        console.error('Lỗi khi lấy danh mục:', err);
+      });
+    }
+
+    // Cập nhật các dropdown select trong form thêm/sửa chi tiêu
+    function updateCategoryDropdowns(categories) {
+      const dropdowns = ['categoryId', 'edit-categoryId'];
+      
+      dropdowns.forEach(id => {
+        const dropdown = document.getElementById(id);
+        if (dropdown) {
+          // Giữ lại option mặc định
+          const defaultOption = dropdown.querySelector('option[value=""]');
+          dropdown.innerHTML = '';
+          dropdown.appendChild(defaultOption);
+          
+          // Thêm các option danh mục
+          categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.id;
+            option.textContent = `${category.name}`;
+            option.setAttribute('data-color', category.color);
+            option.setAttribute('data-icon', category.icon);
+            dropdown.appendChild(option);
+          });
+        }
+      });
+    }
+
+    // Gán sự kiện cho các nút quản lý danh mục
+    function setupCategoryButtons() {
+      // Sự kiện cho nút sửa danh mục
+      document.querySelectorAll('.edit-category').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const categoryId = this.getAttribute('data-id');
+          
+          // Lấy thông tin từ hàng
+          const row = this.closest('li');
+          const name = row.cells[0].innerText;
+          const color = row.querySelector('.category-icon').style.color;
+          const icon = row.querySelector('.category-icon i').className;
+          
+          // Điền thông tin vào form
+          document.getElementById('category-id').value = categoryId;
+          document.getElementById('category-name').value = name;
+          document.getElementById('category-color').value = color;
+          document.getElementById('category-icon').value = icon;
+          
+          // Mở modal
+          const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+          modal.show();
+        });
+      });
+      
+      // Sự kiện cho nút xóa danh mục
+      document.querySelectorAll('.delete-category').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const categoryId = this.getAttribute('data-id');
+          document.getElementById('delete-category-id').value = categoryId;
+          const modal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
+          modal.show();
+        });
+      });
+    }
+
+    // Lấy chi tiết danh mục theo ID
+    function fetchCategoryDetails(categoryId) {
+      fetch(`/api/categories/${categoryId}`, {
+        headers: {
+          'Authorization': 'Bearer ' + getToken()
+        }
+      })
+      .then(res => {
+        if(res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          return;
+        }
+        return res.json();
+      })
+      .then(category => {
+        if (category) {
+          // Điền thông tin danh mục vào form
+          document.getElementById('category-id').value = category.id;
+          document.getElementById('category-name').value = category.name;
+          document.getElementById('category-color').value = category.color;
+          document.getElementById('category-icon').value = category.icon;
+          
+          // Đổi tiêu đề modal
+          document.getElementById('categoryModalLabel').textContent = 'Sửa danh mục';
+          
+          // Hiển thị modal
+          const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+          modal.show();
+        }
+      })
+      .catch(err => {
+        console.error('Lỗi khi lấy chi tiết danh mục:', err);
+      });
+    }
+
+    // Sự kiện cho nút thêm danh mục mới
+    document.getElementById('add-category-btn').addEventListener('click', function() {
+      // Reset form
+      document.getElementById('category-id').value = '';
+      document.getElementById('category-name').value = '';
+      document.getElementById('category-color').value = '#72d1a8';
+      document.getElementById('category-icon').value = 'bi-tag';
+      
+      // Đổi tiêu đề modal
+      document.getElementById('categoryModalLabel').textContent = 'Thêm danh mục';
+      
+      // Hiển thị modal
+      const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+      modal.show();
+    });
+
+    // Sự kiện lưu danh mục (thêm/sửa)
+    document.getElementById('save-category').addEventListener('click', function() {
+      const categoryId = document.getElementById('category-id').value;
+      const name = document.getElementById('category-name').value;
+      const color = document.getElementById('category-color').value;
+      const icon = document.getElementById('category-icon').value;
+      
+      if (!name) {
+        document.getElementById('category-name').classList.add('is-invalid');
+        return;
+      }
+      
+      const method = categoryId ? 'PUT' : 'POST';
+      const url = categoryId ? `/api/categories/${categoryId}` : '/api/categories';
+      
+      fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + getToken()
+        },
+        body: JSON.stringify({ name, color, icon })
+      })
+      .then(res => {
+        if(res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          return;
+        }
+        return res.json();
+      })
+      .then(data => {
+        if(data.success) {
+          // Đóng modal
+          bootstrap.Modal.getInstance(document.getElementById('categoryModal')).hide();
+          
+          // Cập nhật lại danh sách danh mục
+          fetchCategories();
+        } else if (data.errors) {
+          // Hiển thị lỗi validation
+          const errors = data.errors;
+          if (errors.name) {
+            document.getElementById('category-name').classList.add('is-invalid');
+            document.getElementById('category-name').nextElementSibling.textContent = errors.name;
+          }
+        } else {
+          alert(data.error || 'Có lỗi xảy ra!');
+        }
+      })
+      .catch(err => {
+        console.error('Lỗi khi lưu danh mục:', err);
+        alert('Lỗi kết nối server!');
+      });
+    });
+
+    // Sự kiện xóa danh mục
+    document.getElementById('confirm-delete-category').addEventListener('click', function() {
+      const categoryId = document.getElementById('delete-category-id').value;
+      
+      fetch(`/api/categories/${categoryId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + getToken()
+        }
+      })
+      .then(res => {
+        if(res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          return;
+        }
+        return res.json();
+      })
+      .then(data => {
+        if(data.success) {
+          // Đóng modal
+          bootstrap.Modal.getInstance(document.getElementById('deleteCategoryModal')).hide();
+          
+          // Cập nhật lại danh sách danh mục
+          fetchCategories();
+        } else {
+          alert(data.error || 'Có lỗi xảy ra!');
+        }
+      })
+      .catch(err => {
+        console.error('Lỗi khi xóa danh mục:', err);
+        alert('Lỗi kết nối server!');
+      });
+    });
+
+    // Sự kiện tạo danh mục mặc định
+    document.getElementById('add-default-categories').addEventListener('click', function() {
+      if (!confirm('Bạn có muốn tạo các danh mục mặc định không?')) {
+        return;
+      }
+      
+      fetch('/api/categories/default', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + getToken()
+        }
+      })
+      .then(res => {
+        if(res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          return;
+        }
+        return res.json();
+      })
+      .then(data => {
+        if(data.success) {
+          // Cập nhật lại danh sách danh mục
+          fetchCategories();
+        } else {
+          alert(data.error || 'Có lỗi xảy ra!');
+        }
+      })
+      .catch(err => {
+        console.error('Lỗi khi tạo danh mục mặc định:', err);
+        alert('Lỗi kết nối server!');
+      });
+    });
+
+    // =================== Expense Management ===================
+    // Update fetch expenses to support categories
+    function fetchExpenses() {
+      fetch('/api/expenses', {
+        headers: {
+          'Authorization': 'Bearer ' + getToken()
+        }
+      })
+      .then(res => {
+        if(res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          return;
+        }
+        return res.json();
+      })
+      .then(data => {
+        const list = document.getElementById('expense-list');
+        const totalAmountElement = document.getElementById('total-amount');
+        let total = 0;
+        
+        if (!data || data.length === 0) {
+          list.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Chưa có chi tiêu nào</td></tr>';
+          totalAmountElement.innerText = '0đ';
+          return;
+        }
+        
+        list.innerHTML = '';
+        data.forEach(item => {
+          total += item.amount;
+          const tr = document.createElement('tr');
+          
+          // Category display
+          const categoryDisplay = item.category 
+            ? `<span class="badge rounded-pill" style="background-color: ${item.category.color}">
+                <i class="bi ${item.category.icon} me-1"></i>
+                ${item.category.name}
+               </span>` 
+            : '<span class="badge bg-secondary">Chưa phân loại</span>';
+          
+          tr.innerHTML = `
+            <td class="ps-4">${item.description}</td>
+            <td>${categoryDisplay}</td>
+            <td>${formatDate(item.date)}</td>
+            <td class="text-end amount">${formatCurrency(item.amount)}</td>
+            <td class="text-center">
+              <button class="btn btn-icon btn-light me-1 edit-expense" data-id="${item.id}" title="Sửa">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+              <button class="btn btn-icon btn-light delete-expense" data-id="${item.id}" title="Xóa">
+                <i class="bi bi-trash text-danger"></i>
+              </button>
+            </td>
+          `;
+          list.appendChild(tr);
+        });
+        
+        totalAmountElement.innerText = formatCurrency(total);
+        
+        // Gán sự kiện cho nút sửa và xóa
+        setupEditButtons();
+        setupDeleteButtons();
+      })
+      .catch(err => {
+        console.error('Lỗi khi lấy dữ liệu:', err);
+      });
+    }
+    
+    // Modify setupEditButtons to support categories
+    function setupEditButtons() {
+      document.querySelectorAll('.edit-expense').forEach(button => {
+        button.addEventListener('click', function() {
+          const expenseId = this.getAttribute('data-id');
+          
+          // Lấy thông tin từ hàng
+          const row = this.closest('tr');
+          const description = row.cells[0].innerText;
+          const category = row.cells[1].innerText;
+          const dateString = row.cells[2].innerText;
+          const amount = row.cells[3].innerText.replace(/\D/g, '');
+          
+          // Chuyển đổi ngày sang định dạng YYYY-MM-DD cho input date
+          const dateParts = dateString.split('/');
+          const formattedDate = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
+          
+          // Điền dữ liệu vào form
+          document.getElementById('edit-expense-id').value = expenseId;
+          document.getElementById('edit-amount').value = amount;
+          document.getElementById('edit-description').value = description;
+          document.getElementById('edit-date').value = formattedDate;
+          document.getElementById('edit-categoryId').value = category;
+          
+          // Mở modal
+          const modal = new bootstrap.Modal(document.getElementById('editExpenseModal'));
+          modal.show();
+        });
+      });
+    }
+    
+    // Update expense form save handler
+    document.getElementById('save-edit-expense').addEventListener('click', function() {
+      const id = document.getElementById('edit-expense-id').value;
+      const amount = document.getElementById('edit-amount').value;
+      const description = document.getElementById('edit-description').value;
+      const date = document.getElementById('edit-date').value;
+      const categoryId = document.getElementById('edit-categoryId').value;
+      
+      if (!amount || !description || !date) {
+        alert('Vui lòng điền đầy đủ thông tin!');
+        return;
+      }
+      
+      fetch(`/api/expenses/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + getToken()
+        },
+        body: JSON.stringify({ amount, description, date, categoryId: categoryId || null })
+      })
+      .then(res => {
+        if(res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          return;
+        }
+        return res.json();
+      })
+      .then(data => {
+        if(data.success) {
+          // Đóng modal
+          bootstrap.Modal.getInstance(document.getElementById('editExpenseModal')).hide();
+          
+          // Cập nhật lại danh sách
+          fetchExpenses();
+        } else {
+          alert(data.error || 'Có lỗi xảy ra!');
+        }
+      })
+      .catch(err => {
+        console.error('Lỗi khi cập nhật:', err);
+        alert('Lỗi kết nối server!');
+      });
+    });
+    
+    // Update add expense form submit handler
+    document.getElementById('expense-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const amount = document.getElementById('amount').value;
+      const description = document.getElementById('description').value;
+      const date = document.getElementById('date').value;
+      const categoryId = document.getElementById('categoryId').value;
+
+      fetch('/api/expenses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + getToken()
+        },
+        body: JSON.stringify({ 
+          amount, 
+          description, 
+          date, 
+          categoryId: categoryId || null 
+        })
+      })
+        .then(res => {
+          if(res.status === 401) {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+            return;
+          }
+          return res.json();
+        })
+        .then(data => {
+          if(data.success) {
+            // Reset form
+            document.getElementById('amount').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('categoryId').value = '';
+            fetchExpenses();
+          } else {
+            alert(data.error || 'Có lỗi xảy ra khi thêm chi tiêu!');
+          }
+        })
+        .catch(err => {
+          console.error('Lỗi khi thêm chi tiêu:', err);
+          alert('Lỗi kết nối server!');
+        });
+    });
+
+    // =================== Budget Management ===================
+    // Load budgets
+    function loadBudgets() {
+      fetch('/api/budgets', {
+        headers: {
+          'Authorization': 'Bearer ' + getToken()
+        }
+      })
+      .then(res => {
+        if(res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          return;
+        }
+        return res.json();
+      })
+      .then(data => {
+        const list = document.getElementById('budget-list');
+        
+        if (!data || data.length === 0) {
+          list.innerHTML = '<div class="budget-item text-center text-muted py-3">Chưa có ngân sách nào</div>';
+          return;
+        }
+        
+        list.innerHTML = '';
+        
+        data.forEach(budget => {
+          const div = document.createElement('div');
+          div.className = 'budget-item';
+          div.innerHTML = `
+            <div class="budget-category" style="color: ${budget.category.color}">
+              <i class="bi ${budget.category.icon}"></i>
+              <span>${budget.category.name}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="budget-title">${budget.period}</div>
+              <div class="budget-amount">${formatCurrency(budget.amount)}</div>
+            </div>
+            <div class="budget-actions">
+              <button class="btn btn-sm btn-outline-secondary me-1 edit-budget" data-id="${budget.id}">
+                <i class="bi bi-pencil"></i> Sửa
+              </button>
+              <button class="btn btn-sm btn-outline-danger delete-budget" data-id="${budget.id}">
+                <i class="bi bi-trash"></i> Xóa
+              </button>
+            </div>
+          `;
+          list.appendChild(div);
+        });
+        
+        // Gán sự kiện cho nút sửa và xóa ngân sách
+        setupBudgetButtons();
+      })
+      .catch(err => {
+        console.error('Lỗi khi tải ngân sách:', err);
+      });
+    }
+    
+    // Gán sự kiện cho nút sửa và xóa ngân sách
+    function setupBudgetButtons() {
+      document.querySelectorAll('.edit-budget').forEach(button => {
+        button.addEventListener('click', function() {
+          const budgetId = this.getAttribute('data-id');
+          fetchBudgetDetails(budgetId);
+        });
+      });
+      
+      document.querySelectorAll('.delete-budget').forEach(button => {
+        button.addEventListener('click', function() {
+          const budgetId = this.getAttribute('data-id');
+          document.getElementById('delete-budget-id').value = budgetId;
+          const modal = new bootstrap.Modal(document.getElementById('deleteBudgetModal'));
+          modal.show();
+        });
+      });
+    }
+    
+    // Load budget details
+    function fetchBudgetDetails(budgetId) {
+      fetch(`/api/budgets/${budgetId}`, {
+        headers: {
+          'Authorization': 'Bearer ' + getToken()
+        }
+      })
+      .then(res => {
+        if(res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          return;
+        }
+        return res.json();
+      })
+      .then(budget => {
+        if (budget) {
+          // Điền dữ liệu vào form
+          document.getElementById('budget-id').value = budget.id;
+          document.getElementById('budget-amount').value = budget.amount;
+          document.getElementById('budget-period').value = budget.period;
+          document.getElementById('budget-categoryId').value = budget.categoryId;
+          document.getElementById('budget-startDate').value = new Date(budget.startDate).toISOString().split('T')[0];
+          document.getElementById('budget-endDate').value = budget.endDate ? new Date(budget.endDate).toISOString().split('T')[0] : '';
+          document.getElementById('budget-isRecurring').checked = budget.isRecurring;
+          
+          // Mở modal
+          const modal = new bootstrap.Modal(document.getElementById('budgetModal'));
+          modal.show();
+        }
+      })
+      .catch(err => {
+        console.error('Lỗi khi tải ngân sách:', err);
+      });
+    }
+    
+    // Thêm mới ngân sách
+    document.getElementById('add-budget-btn').addEventListener('click', function() {
+      // Reset form
+      document.getElementById('budget-id').value = '';
+      document.getElementById('budget-amount').value = '';
+      document.getElementById('budget-period').value = 'month';
+      document.getElementById('budget-categoryId').value = '';
+      document.getElementById('budget-startDate').value = '';
+      document.getElementById('budget-endDate').value = '';
+      document.getElementById('budget-isRecurring').checked = true;
+      
+      // Mở modal
+      const modal = new bootstrap.Modal(document.getElementById('budgetModal'));
+      modal.show();
+    });
+    
+    // Lưu ngân sách
+    document.getElementById('save-budget').addEventListener('click', function() {
+      const budgetId = document.getElementById('budget-id').value;
+      const amount = document.getElementById('budget-amount').value;
+      const period = document.getElementById('budget-period').value;
+      const categoryId = document.getElementById('budget-categoryId').value;
+      const startDate = document.getElementById('budget-startDate').value;
+      const endDate = document.getElementById('budget-endDate').value;
+      const isRecurring = document.getElementById('budget-isRecurring').checked;
+      
+      if (!amount || !startDate) {
+        alert('Vui lòng điền đầy đủ thông tin!');
+        return;
+      }
+      
+      const method = budgetId ? 'PUT' : 'POST';
+      const url = budgetId ? `/api/budgets/${budgetId}` : '/api/budgets';
+      
+      fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + getToken()
+        },
+        body: JSON.stringify({
+          amount,
+          period,
+          categoryId,
+          startDate,
+          endDate: endDate || null,
+          isRecurring
+        })
+      })
+      .then(res => {
+        if(res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          return;
+        }
+        return res.json();
+      })
+      .then(data => {
+        if(data.success) {
+          // Đóng modal
+          bootstrap.Modal.getInstance(document.getElementById('budgetModal')).hide();
+          
+          // Cập nhật lại danh sách ngân sách
+          loadBudgets();
+        } else {
+          alert(data.error || 'Có lỗi xảy ra!');
+        }
+      })
+      .catch(err => {
+        console.error('Lỗi khi lưu ngân sách:', err);
+        alert('Lỗi kết nối server!');
+      });
+    });
+    
+    // Xóa ngân sách
+    document.getElementById('confirm-delete-budget').addEventListener('click', function() {
+      const budgetId = document.getElementById('delete-budget-id').value;
+      
+      fetch(`/api/budgets/${budgetId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + getToken()
+        }
+      })
+      .then(res => {
+        if(res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          return;
+        }
+        return res.json();
+      })
+      .then(data => {
+        if(data.success) {
+          // Đóng modal
+          bootstrap.Modal.getInstance(document.getElementById('deleteBudgetModal')).hide();
+          
+          // Cập nhật lại danh sách ngân sách
+          loadBudgets();
+        } else {
+          alert(data.error || 'Có lỗi xảy ra!');
+        }
+      })
+      .catch(err => {
+        console.error('Lỗi khi xóa ngân sách:', err);
+        alert('Lỗi kết nối server!');
+      });
+    });
+
+    // Load incomes
+    function loadIncomes() {
+      fetch('/api/incomes', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Không thể tải dữ liệu thu nhập');
+        return response.json();
+      })
+      .then(incomes => {
+        const incomeList = document.getElementById('income-list');
+        incomeList.innerHTML = '';
+        
+        if (incomes.length === 0) {
+          incomeList.innerHTML = '<div class="p-3 text-center text-muted">Chưa có thu nhập nào được thêm</div>';
+          return;
+        }
+        
+        incomes.forEach(income => {
+          // Xác định icon cho nguồn thu nhập
+          let sourceIcon = 'bi-cash';
+          switch(income.source) {
+            case 'salary': sourceIcon = 'bi-briefcase'; break;
+            case 'bonus': sourceIcon = 'bi-gift'; break;
+            case 'investment': sourceIcon = 'bi-graph-up-arrow'; break;
+            case 'freelance': sourceIcon = 'bi-laptop'; break;
+            case 'gift': sourceIcon = 'bi-box2-heart'; break;
+            default: sourceIcon = 'bi-cash';
+          }
+          
+          // Xác định tên nguồn thu nhập
+          let sourceName = 'Khác';
+          switch(income.source) {
+            case 'salary': sourceName = 'Lương'; break;
+            case 'bonus': sourceName = 'Thưởng'; break;
+            case 'investment': sourceName = 'Đầu tư'; break;
+            case 'freelance': sourceName = 'Freelance'; break;
+            case 'gift': sourceName = 'Quà tặng'; break;
+            default: sourceName = 'Khác';
+          }
+          
+          const incomeItem = document.createElement('div');
+          incomeItem.className = 'income-item';
+          incomeItem.innerHTML = `
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="income-source">
+                  <i class="bi ${sourceIcon}"></i> ${income.description}
+                  ${income.isRecurring ? '<span class="income-recurring">Lặp lại</span>' : ''}
+                </div>
+                <div class="income-amount">${formatCurrency(income.amount)}</div>
+                <div class="income-date">
+                  <i class="bi bi-calendar3"></i> ${formatDate(income.date)} · ${sourceName}
+                </div>
+              </div>
+              <div class="dropdown">
+                <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item edit-income" href="#" data-id="${income.id}">Sửa</a></li>
+                  <li><a class="dropdown-item delete-income" href="#" data-id="${income.id}">Xóa</a></li>
+                </ul>
+              </div>
+            </div>
+          `;
+          
+          incomeList.appendChild(incomeItem);
+        });
+        
+        // Thêm event listeners cho các nút sửa và xóa
+        document.querySelectorAll('.edit-income').forEach(button => {
+          button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const incomeId = this.getAttribute('data-id');
+            editIncome(incomeId);
+          });
+        });
+        
+        document.querySelectorAll('.delete-income').forEach(button => {
+          button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const incomeId = this.getAttribute('data-id');
+            document.getElementById('delete-income-id').value = incomeId;
+            const deleteIncomeModal = new bootstrap.Modal(document.getElementById('deleteIncomeModal'));
+            deleteIncomeModal.show();
+          });
+        });
+      })
+      .catch(error => {
+        console.error('Lỗi khi tải thu nhập:', error);
+        showAlert('danger', 'Không thể tải dữ liệu thu nhập: ' + error.message);
+      });
+    }
+
+    // Load balance summary
+    function loadBalanceSummary() {
+      fetch('/api/incomes/balance?period=month', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Không thể tải dữ liệu cân đối thu chi');
+        return response.json();
+      })
+      .then(balance => {
+        const balanceSummary = document.getElementById('balance-summary');
+        
+        const balanceClass = balance.isPositive ? 'balance-positive' : 'balance-negative';
+        const balanceIcon = balance.isPositive ? 'bi-emoji-smile' : 'bi-emoji-frown';
+        
+        balanceSummary.innerHTML = `
+          <div class="balance-card ${balanceClass}">
+            <div class="balance-title">
+              <i class="bi ${balanceIcon}"></i> Cân đối Tháng này
+            </div>
+            <div class="balance-amount">${formatCurrency(balance.balance)}</div>
+            <div class="balance-details">
+              <div class="balance-income">
+                <span>Thu nhập</span>
+                <span class="balance-income-amount">${formatCurrency(balance.totalIncome)}</span>
+              </div>
+              <div class="balance-expense">
+                <span>Chi tiêu</span>
+                <span class="balance-expense-amount">${formatCurrency(balance.totalExpense)}</span>
+              </div>
+            </div>
+            <div class="balance-savings">
+              <span>Tỉ lệ tiết kiệm: <span class="balance-savings-rate">${balance.savingsRate}%</span></span>
+            </div>
+          </div>
+        `;
+      })
+      .catch(error => {
+        console.error('Lỗi khi tải cân đối thu chi:', error);
+        const balanceSummary = document.getElementById('balance-summary');
+        balanceSummary.innerHTML = '<div class="text-center text-muted">Không thể tải dữ liệu cân đối thu chi</div>';
+      });
+    }
+
+    // Add income
+    function addIncome() {
+      // Reset form
+      document.getElementById('income-form').reset();
+      document.getElementById('income-id').value = '';
+      document.getElementById('incomeModalLabel').textContent = 'Thêm thu nhập';
+      document.getElementById('income-date').valueAsDate = new Date();
+      document.getElementById('frequency-group').style.display = 'none';
+      
+      // Show modal
+      const incomeModal = new bootstrap.Modal(document.getElementById('incomeModal'));
+      incomeModal.show();
+    }
+
+    // Edit income
+    function editIncome(incomeId) {
+      fetch(`/api/incomes/${incomeId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Không thể tải thông tin thu nhập');
+        return response.json();
+      })
+      .then(income => {
+        document.getElementById('income-id').value = income.id;
+        document.getElementById('income-amount').value = income.amount;
+        document.getElementById('income-description').value = income.description;
+        document.getElementById('income-source').value = income.source;
+        document.getElementById('income-date').value = income.date.split('T')[0];
+        document.getElementById('income-isRecurring').checked = income.isRecurring;
+        
+        if (income.isRecurring) {
+          document.getElementById('frequency-group').style.display = 'block';
+          document.getElementById('income-frequency').value = income.frequency || 'monthly';
+        } else {
+          document.getElementById('frequency-group').style.display = 'none';
+        }
+        
+        document.getElementById('incomeModalLabel').textContent = 'Sửa thu nhập';
+        
+        const incomeModal = new bootstrap.Modal(document.getElementById('incomeModal'));
+        incomeModal.show();
+      })
+      .catch(error => {
+        console.error('Lỗi khi tải thông tin thu nhập:', error);
+        showAlert('danger', 'Không thể tải thông tin thu nhập: ' + error.message);
+      });
+    }
+
+    // Save income
+    function saveIncome() {
+      const incomeId = document.getElementById('income-id').value;
+      const amount = document.getElementById('income-amount').value;
+      const description = document.getElementById('income-description').value;
+      const source = document.getElementById('income-source').value;
+      const date = document.getElementById('income-date').value;
+      const isRecurring = document.getElementById('income-isRecurring').checked;
+      const frequency = isRecurring ? document.getElementById('income-frequency').value : null;
+      
+      // Validate form
+      let isValid = true;
+      if (!amount || isNaN(amount) || Number(amount) <= 0) {
+        document.getElementById('income-amount').classList.add('is-invalid');
+        isValid = false;
+      } else {
+        document.getElementById('income-amount').classList.remove('is-invalid');
+      }
+      
+      if (!description) {
+        document.getElementById('income-description').classList.add('is-invalid');
+        isValid = false;
+      } else {
+        document.getElementById('income-description').classList.remove('is-invalid');
+      }
+      
+      if (!date) {
+        document.getElementById('income-date').classList.add('is-invalid');
+        isValid = false;
+      } else {
+        document.getElementById('income-date').classList.remove('is-invalid');
+      }
+      
+      if (!source) {
+        document.getElementById('income-source').classList.add('is-invalid');
+        isValid = false;
+      } else {
+        document.getElementById('income-source').classList.remove('is-invalid');
+      }
+      
+      if (!isValid) return;
+      
+      const incomeData = {
+        amount,
+        description,
+        source,
+        date,
+        isRecurring,
+        frequency
+      };
+      
+      const url = incomeId ? `/api/incomes/${incomeId}` : '/api/incomes';
+      const method = incomeId ? 'PUT' : 'POST';
+      
+      fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(incomeData)
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Không thể lưu thu nhập');
+        return response.json();
+      })
+      .then(data => {
+        const incomeModal = bootstrap.Modal.getInstance(document.getElementById('incomeModal'));
+        incomeModal.hide();
+        
+        showAlert('success', incomeId ? 'Thu nhập đã được cập nhật' : 'Thu nhập đã được thêm');
+        loadIncomes();
+        loadBalanceSummary();
+      })
+      .catch(error => {
+        console.error('Lỗi khi lưu thu nhập:', error);
+        showAlert('danger', 'Không thể lưu thu nhập: ' + error.message);
+      });
+    }
+
+    // Delete income
+    function deleteIncome() {
+      const incomeId = document.getElementById('delete-income-id').value;
+      
+      fetch(`/api/incomes/${incomeId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Không thể xóa thu nhập');
+        return response.json();
+      })
+      .then(data => {
+        const deleteIncomeModal = bootstrap.Modal.getInstance(document.getElementById('deleteIncomeModal'));
+        deleteIncomeModal.hide();
+        
+        showAlert('success', 'Thu nhập đã được xóa');
+        loadIncomes();
+        loadBalanceSummary();
+      })
+      .catch(error => {
+        console.error('Lỗi khi xóa thu nhập:', error);
+        showAlert('danger', 'Không thể xóa thu nhập: ' + error.message);
+      });
+    }
+
+    // Toggle recurring frequency
+    function toggleRecurringFrequency() {
+      const isRecurring = document.getElementById('income-isRecurring').checked;
+      document.getElementById('frequency-group').style.display = isRecurring ? 'block' : 'none';
+    }
+
+    // Initialize: load expenses, categories, budgets, incomes and balance summary
     document.addEventListener('DOMContentLoaded', function() {
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('date').value = today;
+      
       fetchExpenses();
+      fetchCategories();
+      loadBudgets();
+      loadIncomes();
+      loadBalanceSummary();
+      
+      // Income event listeners
+      document.getElementById('add-income-btn').addEventListener('click', addIncome);
+      document.getElementById('save-income').addEventListener('click', saveIncome);
+      document.getElementById('confirm-delete-income').addEventListener('click', deleteIncome);
+      document.getElementById('income-isRecurring').addEventListener('change', toggleRecurringFrequency);
     });
   </script>
 </body>

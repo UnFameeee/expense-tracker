@@ -20,6 +20,8 @@ model Expense {
   description String
   date        DateTime
   username    String
+  category    Category? @relation(fields: [categoryId], references: [id])
+  categoryId  Int?
 }
 
 model User {
@@ -27,4 +29,43 @@ model User {
   username String @unique
   password String
   role     String @default("admin")
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String
+  color       String    @default("#72d1a8") // Màu mặc định giống primary color
+  icon        String    @default("bi-tag") // Icon mặc định
+  username    String    // Để mỗi người dùng có thể có category riêng
+  expenses    Expense[]
+  budgets     Budget[]  // Quan hệ với Budget
+  
+  @@unique([name, username]) // Đảm bảo mỗi user không có category trùng tên
+}
+
+model Budget {
+  id          Int       @id @default(autoincrement())
+  amount      Int       // Số tiền ngân sách
+  period      String    @default("month") // Chu kỳ: week, month, year
+  startDate   DateTime  // Ngày bắt đầu
+  endDate     DateTime? // Ngày kết thúc (có thể null nếu là ngân sách lặp lại)
+  isRecurring Boolean   @default(true) // Ngân sách lặp lại hay không
+  username    String    // Người dùng sở hữu ngân sách
+  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Income {
+  id          Int       @id @default(autoincrement())
+  amount      Int       // Số tiền thu nhập
+  description String    // Mô tả nguồn thu nhập
+  date        DateTime  // Ngày nhận thu nhập
+  source      String    // Nguồn thu nhập: salary, bonus, investment, other
+  isRecurring Boolean   @default(false) // Thu nhập lặp lại hay không
+  frequency   String?   // Tần suất lặp lại: weekly, monthly, yearly
+  username    String    // Người dùng sở hữu thu nhập
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }

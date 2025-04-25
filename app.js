@@ -17,6 +17,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', require('./routes/view'));
 app.use('/api/expenses', require('./routes/api/expense'));
 app.use('/api/auth', require('./routes/api/auth'));
+app.use('/api/categories', require('./routes/api/category'));
+app.use('/api/budgets', require('./routes/api/budget'));
+app.use('/api/incomes', require('./routes/api/income'));
 
 app.listen(PORT, () => {
   console.log(`Server đang chạy tại http://localhost:${PORT}`);

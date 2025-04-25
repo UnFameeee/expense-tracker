@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllExpenses, addExpense, updateExpense, deleteExpense } = require('../../services/expenseService');
+const { getAllExpenses, addExpense, updateExpense, deleteExpense, getExpenseStatsByCategory } = require('../../services/expenseService');
 
 // Middleware xác thực JWT (dùng lại từ app.js)
 const jwt = require('jsonwebtoken');
@@ -30,15 +30,38 @@ router.get('/', authMiddleware, async (req, res) => {
 
 // POST /api/expenses
 router.post('/', authMiddleware, async (req, res) => {
-  const { amount, description, date } = req.body;
+  const { amount, description, date, categoryId } = req.body;
   
   // Validation
-  if (!amount || !description || !date) {
-    return res.status(400).json({ error: 'Thiếu thông tin!' });
+  const errors = {};
+  
+  if (!amount) {
+    errors.amount = 'Số tiền không được để trống';
+  } else if (isNaN(amount) || Number(amount) <= 0) {
+    errors.amount = 'Số tiền phải là số dương';
+  }
+  
+  if (!description) {
+    errors.description = 'Nội dung không được để trống';
+  } else if (description.length < 2) {
+    errors.description = 'Nội dung phải có ít nhất 2 ký tự';
+  }
+  
+  if (!date) {
+    errors.date = 'Ngày không được để trống';
+  } else {
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) {
+      errors.date = 'Ngày không hợp lệ';
+    }
+  }
+  
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json({ errors });
   }
   
   try {
-    const newExpense = await addExpense({ amount, description, date, username: req.user.username });
+    const newExpense = await addExpense({ amount, description, date, categoryId, username: req.user.username });
     res.status(201).json({ success: true, expense: newExpense });
   } catch (err) {
     console.error('Lỗi khi thêm expense:', err);
@@ -49,17 +72,40 @@ router.post('/', authMiddleware, async (req, res) => {
 // PUT /api/expenses/:id - Cập nhật khoản chi tiết
 router.put('/:id', authMiddleware, async (req, res) => {
   const { id } = req.params;
-  const { amount, description, date } = req.body;
+  const { amount, description, date, categoryId } = req.body;
   
   // Validation
-  if (!amount || !description || !date) {
-    return res.status(400).json({ error: 'Thiếu thông tin!' });
+  const errors = {};
+  
+  if (!amount) {
+    errors.amount = 'Số tiền không được để trống';
+  } else if (isNaN(amount) || Number(amount) <= 0) {
+    errors.amount = 'Số tiền phải là số dương';
+  }
+  
+  if (!description) {
+    errors.description = 'Nội dung không được để trống';
+  } else if (description.length < 2) {
+    errors.description = 'Nội dung phải có ít nhất 2 ký tự';
+  }
+  
+  if (!date) {
+    errors.date = 'Ngày không được để trống';
+  } else {
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) {
+      errors.date = 'Ngày không hợp lệ';
+    }
+  }
+  
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json({ errors });
   }
   
   try {
     const updatedExpense = await updateExpense(
       id, 
-      { amount, description, date }, 
+      { amount, description, date, categoryId }, 
       req.user.username
     );
     res.json({ success: true, expense: updatedExpense });
@@ -85,6 +131,18 @@ router.delete('/:id', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: err.message });
     }
     res.status(500).json({ error: 'Lỗi xóa expense', details: err.message });
+  }
+});
+
+// GET /api/expenses/stats - Lấy thống kê chi tiêu theo danh mục
+router.get('/stats', authMiddleware, async (req, res) => {
+  try {
+    const { period } = req.query; // 'week', 'month', 'year'
+    const stats = await getExpenseStatsByCategory(req.user.username, period);
+    res.json(stats);
+  } catch (err) {
+    console.error('Lỗi khi lấy thống kê chi tiêu:', err);
+    res.status(500).json({ error: 'Lỗi lấy dữ liệu thống kê', details: err.message });
   }
 });
 
