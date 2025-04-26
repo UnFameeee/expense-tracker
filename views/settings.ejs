@@ -1,0 +1,358 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-3 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Menu của người dùng</h5>
+        </div>
+        <div class="list-group list-group-flush" role="tablist">
+          <a href="#account" class="list-group-item list-group-item-action active" data-bs-toggle="list" aria-selected="true" role="tab">Tài khoản</a>
+          <a href="#security" class="list-group-item list-group-item-action" data-bs-toggle="list" aria-selected="false" tabindex="-1" role="tab">Bảo mật</a>
+          <a href="#notifications" class="list-group-item list-group-item-action" data-bs-toggle="list" aria-selected="false" tabindex="-1" role="tab">Thông báo</a>
+          <a href="#language" class="list-group-item list-group-item-action" data-bs-toggle="list" aria-selected="false" tabindex="-1" role="tab">Ngôn ngữ</a>
+          <a href="#appearance" class="list-group-item list-group-item-action" data-bs-toggle="list" aria-selected="false" tabindex="-1" role="tab">Giao diện</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-9">
+      <div class="tab-content">
+        <!-- Tài khoản -->
+        <div class="tab-pane fade show active" id="account">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Thông tin tài khoản</h5>
+            </div>
+            <div class="card-body">
+              <form id="account-info-form">
+                <div class="mb-3">
+                  <label for="username" class="form-label">Tên đăng nhập</label>
+                  <input type="text" class="form-control" id="username" value="" readonly>
+                </div>
+                <div class="mb-3">
+                  <label for="fullname" class="form-label">Họ và tên</label>
+                  <input type="text" class="form-control" id="fullname">
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="email">
+                </div>
+                <div class="mb-3">
+                  <label for="currency" class="form-label">Tiền tệ</label>
+                  <select class="form-select" id="currency">
+                    <option value="VND">VND - Việt Nam đồng</option>
+                    <option value="USD">USD - US Dollar</option>
+                    <option value="EUR">EUR - Euro</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bảo mật -->
+        <div class="tab-pane fade" id="security">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Đổi mật khẩu</h5>
+            </div>
+            <div class="card-body">
+              <form id="change-password-form">
+                <div class="mb-3">
+                  <label for="current-password" class="form-label">Mật khẩu hiện tại</label>
+                  <input type="password" class="form-control" id="current-password" required>
+                </div>
+                <div class="mb-3">
+                  <label for="new-password" class="form-label">Mật khẩu mới</label>
+                  <input type="password" class="form-control" id="new-password" required>
+                  <div class="form-text">Tối thiểu 6 ký tự và không chứa khoảng trắng</div>
+                </div>
+                <div class="mb-3">
+                  <label for="confirm-new-password" class="form-label">Xác nhận mật khẩu mới</label>
+                  <input type="password" class="form-control" id="confirm-new-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thông báo -->
+        <div class="tab-pane fade" id="notifications">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Cài đặt thông báo</h5>
+            </div>
+            <div class="card-body">
+              <form id="notification-settings-form">
+                <div class="mb-4">
+                  <h6>Cài đặt email</h6>
+                  <div class="mb-3">
+                    <label for="notification-email" class="form-label">Email nhận thông báo</label>
+                    <input type="email" class="form-control" id="notification-email" value="">
+                    <div class="form-text">Thông báo sẽ được gửi đến địa chỉ email này</div>
+                  </div>
+                </div>
+                
+                <div class="mb-4">
+                  <h6>Loại thông báo</h6>
+                  <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" id="budget-alerts" checked>
+                    <label class="form-check-label" for="budget-alerts">Cảnh báo vượt ngân sách</label>
+                  </div>
+                  
+                  <div class="ms-4 mb-3">
+                    <label class="form-label">Ngưỡng cảnh báo</label>
+                    <select class="form-select" id="budget-threshold">
+                      <option value="50">50% ngân sách</option>
+                      <option value="70">70% ngân sách</option>
+                      <option value="80" selected>80% ngân sách</option>
+                      <option value="90">90% ngân sách</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" id="report-notifications" checked>
+                    <label class="form-check-label" for="report-notifications">Báo cáo tài chính định kỳ</label>
+                  </div>
+                  
+                  <div class="ms-4 mb-3">
+                    <label class="form-label">Tần suất báo cáo</label>
+                    <select class="form-select" id="report-frequency">
+                      <option value="weekly">Hàng tuần</option>
+                      <option value="monthly" selected>Hàng tháng</option>
+                      <option value="quarterly">Hàng quý</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" id="activity-notifications">
+                    <label class="form-check-label" for="activity-notifications">Thông báo hoạt động tài khoản</label>
+                    <div class="form-text">Nhận thông báo khi có đăng nhập mới hoặc thay đổi thông tin tài khoản</div>
+                  </div>
+                </div>
+                
+                <div class="mb-4">
+                  <h6>Kiểm tra kết nối email</h6>
+                  <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <button type="button" class="btn btn-outline-primary" id="test-email-btn">Gửi email thử nghiệm</button>
+                  </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Lưu cài đặt thông báo</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ngôn ngữ -->
+        <div class="tab-pane fade" id="language">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Ngôn ngữ</h5>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">Chọn ngôn ngữ</label>
+                <select class="form-select" id="app-language">
+                  <option value="vi" selected>Tiếng Việt</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+              <button type="button" class="btn btn-primary" id="save-language">Lưu thay đổi</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Giao diện -->
+        <div class="tab-pane fade" id="appearance">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Giao diện</h5>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">Chủ đề hiển thị</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="theme" id="theme-light" value="light" checked>
+                  <label class="form-check-label" for="theme-light">Sáng</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="theme" id="theme-dark" value="dark">
+                  <label class="form-check-label" for="theme-dark">Tối</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="theme" id="theme-system" value="system">
+                  <label class="form-check-label" for="theme-system">Theo hệ thống</label>
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary" id="save-appearance">Lưu thay đổi</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Lấy thông tin người dùng 
+    const username = document.getElementById('username');
+    const token = localStorage.getItem('token');
+    
+    if (token) {
+      try {
+        const decoded = JSON.parse(atob(token.split('.')[1]));
+        username.value = decoded.username || '';
+        // Điền email vào field thông báo
+        document.getElementById('notification-email').value = decoded.email || '';
+      } catch (e) {
+        console.error('Lỗi khi giải mã token:', e);
+      }
+    }
+    
+    // Xử lý lưu cài đặt
+    document.getElementById('account-info-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      showToast('success', 'Đã lưu thông tin tài khoản');
+    });
+    
+    document.getElementById('change-password-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-new-password').value;
+      
+      if (newPassword !== confirmPassword) {
+        showToast('error', 'Mật khẩu xác nhận không khớp');
+        return;
+      }
+      
+      showToast('success', 'Đã đổi mật khẩu thành công');
+      this.reset();
+    });
+    
+    // Xử lý lưu cài đặt thông báo
+    document.getElementById('notification-settings-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Thu thập thông tin từ form
+      const settings = {
+        email: document.getElementById('notification-email').value,
+        budgetAlerts: document.getElementById('budget-alerts').checked,
+        budgetThreshold: document.getElementById('budget-threshold').value,
+        reportNotifications: document.getElementById('report-notifications').checked,
+        reportFrequency: document.getElementById('report-frequency').value,
+        activityNotifications: document.getElementById('activity-notifications').checked
+      };
+      
+      // Lưu vào localStorage (để sử dụng thử tính năng lưu trên server)
+      localStorage.setItem('notificationSettings', JSON.stringify(settings));
+      
+      showToast('success', 'Đã lưu cài đặt thông báo');
+    });
+    
+    // Xử lý gửi email thử nghiệm
+    document.getElementById('test-email-btn').addEventListener('click', function() {
+      const email = document.getElementById('notification-email').value;
+      
+      if (!email) {
+        showToast('error', 'Vui lòng nhập địa chỉ email nhận thông báo');
+        return;
+      }
+      
+      // Gửi API gửi email thử nghiệm
+      fetch('/api/notifications/custom', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          to: email,
+          subject: 'Kiểm tra thông báo từ Expense Tracker',
+          text: 'Đây là email thử nghiệm từ Expense Tracker. Nếu bạn nhận được email này, hãy thử gửi thông báo khác.',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #0275d8;">Kiểm tra thông báo</h2>
+              <p>Xin chào,</p>
+              <p>Đây là email thử nghiệm từ Expense Tracker. Nếu bạn nhận được email này, <strong>hãy thử gửi thông báo khác</strong>!</p>
+              <p>Bạn sẽ nhận được các thông báo sau:</p>
+              <ul>
+                <li>Cảnh báo khi vượt ngân sách</li>
+                <li>Báo cáo tài chính định kỳ</li>
+                <li>Thông báo hoạt động tài khoản</li>
+              </ul>
+              <p>Trân trọng,<br>Expense Tracker</p>
+            </div>
+          `
+        })
+      })
+      .then(res => {
+        if (res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          return;
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data && data.success) {
+          showToast('success', 'Đã gửi email thử nghiệm. Vui lòng kiểm tra hộp thư!');
+        } else {
+          showToast('error', data.error || 'Không thể gửi email thử nghiệm');
+        }
+      })
+      .catch(err => {
+        console.error('Lỗi khi gửi email thử nghiệm:', err);
+        showToast('error', 'Không thể gửi email thử nghiệm. Vui lòng kiểm tra kết nối internet.');
+      });
+    });
+    
+    // Load cài đặt thông báo đã lưu (nếu có)
+    const savedSettings = localStorage.getItem('notificationSettings');
+    if (savedSettings) {
+      try {
+        const settings = JSON.parse(savedSettings);
+        
+        // Điền các giá trị vào form
+        if (settings.email) document.getElementById('notification-email').value = settings.email;
+        document.getElementById('budget-alerts').checked = settings.budgetAlerts !== false;
+        if (settings.budgetThreshold) document.getElementById('budget-threshold').value = settings.budgetThreshold;
+        document.getElementById('report-notifications').checked = settings.reportNotifications !== false;
+        if (settings.reportFrequency) document.getElementById('report-frequency').value = settings.reportFrequency;
+        document.getElementById('activity-notifications').checked = !!settings.activityNotifications;
+      } catch (e) {
+        console.error('Lỗi khi đọc cài đặt thông báo:', e);
+      }
+    }
+    
+    // Hiển thị thông báo
+    function showToast(type, message) {
+      const toastContainer = document.getElementById('toast-container');
+      const toastId = 'toast-' + Date.now();
+      const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
+      
+      const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center ${bgClass} text-white" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      `;
+      
+      toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+      const toastElement = document.getElementById(toastId);
+      const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+      toast.show();
+      
+      toastElement.addEventListener('hidden.bs.toast', function() {
+        toastElement.remove();
+      });
+    }
+  });
+</script>

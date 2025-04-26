@@ -1,0 +1,60 @@
+/* Styles for Incomes page */
+
+/* Filter section */
+.income-filter {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+/* Income table */
+.income-table .amount {
+  font-weight: 600;
+  color: #198754;
+}
+
+/* Form toggle button */
+#toggleIncomeForm {
+  transition: all 0.3s ease;
+}
+
+/* Form container animation */
+#income-form-container {
+  transition: all 0.3s ease;
+}
+
+/* Income source badge */
+.source-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #e9ecef;
+}
+
+.source-salary {
+  background: #cfe2ff;
+  color: #084298;
+}
+
+.source-bonus {
+  background: #d1e7dd;
+  color: #0f5132;
+}
+
+.source-investment {
+  background: #f8d7da;
+  color: #842029;
+}
+
+.source-freelance {
+  background: #fff3cd;
+  color: #664d03;
+}
+
+.source-gift {
+  background: #e0cffc;
+  color: #5a21b5;
+}

@@ -1,0 +1,147 @@
+/* Dashboard specific styles */
+
+/* Summary cards */
+.summary-card {
+  background: linear-gradient(45deg, #72d1a8, #43e6a0);
+  color: white;
+}
+
+.summary-card .amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+}
+
+.summary-card .text-white-50 {
+  opacity: 0.8;
+}
+
+/* Category cards */
+.category-card {
+  border-radius: 10px;
+  background: #f8f9fa;
+  transition: all 0.2s ease;
+}
+
+.category-card:hover {
+  background: #eaecee;
+  transform: translateY(-2px);
+}
+
+.category-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: white;
+  margin-right: 10px;
+}
+
+/* Budget progress */
+.budget-progress {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.budget-progress .progress {
+  height: 8px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Expense list */
+.expense-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.expense-item {
+  padding: 12px;
+  border-bottom: 1px solid #f1f1f1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.expense-item:last-child {
+  border-bottom: none;
+}
+
+.expense-item .expense-details {
+  flex-grow: 1;
+}
+
+.expense-item .expense-amount {
+  font-weight: 600;
+  color: #dc3545;
+}
+
+/* Balance card */
+.balance-card {
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.balance-positive {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.balance-negative {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.balance-title {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.balance-title i {
+  margin-right: 8px;
+}
+
+.balance-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.balance-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+
+/* Color picker for categories */
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.icon-option {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: #f8f9fa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-option:hover {
+  background: #e9ecef;
+}
+
+.icon-option.selected {
+  background: #dee2e6;
+}

@@ -1,0 +1,28 @@
+/* Combined CSS file for Expense Tracker */
+
+/* Main styles */
+@import url('/css/main.css');
+
+/* Layout styles */
+@import url('/css/layout.css');
+
+/* Sidebar styles */
+@import url('/css/sidebar.css');
+
+/* Dashboard styles */
+@import url('/css/dashboard.css');
+
+/* Dashboard overview styles */
+@import url('/css/dashboard-overview.css');
+
+/* Categories styles */
+@import url('/css/categories.css');
+
+/* Expenses styles */
+@import url('/css/expenses.css');
+
+/* Incomes styles */
+@import url('/css/incomes.css');
+
+/* Authentication styles */
+@import url('/css/auth.css');

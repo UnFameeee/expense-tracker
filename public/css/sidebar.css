@@ -1,0 +1,136 @@
+/* Sidebar styling */
+:root {
+  --primary-gradient: linear-gradient(135deg, #72d1a8 0%, #72d1a8 100%);
+  --bs-primary: #72d1a8 !important;
+  --primary: #72d1a8 !important;
+  --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --transition-all: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --sidebar-width: 280px;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  padding: 0;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  transition: var(--transition-all);
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  padding: 1.5rem 1rem;
+  background: var(--primary-gradient);
+  color: white;
+}
+
+.sidebar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: white;
+  text-decoration: none;
+}
+
+.sidebar-menu {
+  padding: 1rem 0;
+  list-style: none;
+  margin: 0;
+}
+
+.sidebar-menu-item {
+  padding: 0;
+  position: relative;
+}
+
+.sidebar-menu-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: #6c757d;
+  text-decoration: none;
+  transition: var(--transition-all);
+  font-weight: 500;
+}
+
+.sidebar-menu-link:hover {
+  color: var(--bs-primary);
+  background-color: rgba(114, 209, 168, 0.1);
+}
+
+.sidebar-menu-link.active {
+  color: var(--bs-primary);
+  background-color: rgba(114, 209, 168, 0.1);
+  border-left: 4px solid var(--bs-primary);
+}
+
+.sidebar-menu-icon {
+  margin-right: 10px;
+  font-size: 1.25rem;
+  width: 30px;
+  text-align: center;
+}
+
+/* Main content styling */
+.main-content {
+  margin-left: var(--sidebar-width);
+  padding: 20px;
+  transition: var(--transition-all);
+}
+
+.navbar {
+  background: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1.5rem;
+}
+
+/* Toggle sidebar */
+.toggle-sidebar {
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #495057;
+}
+
+/* Sidebar collapsed state */
+.sidebar-collapsed .sidebar {
+  left: calc(-1 * var(--sidebar-width));
+}
+
+.sidebar-collapsed .main-content {
+  margin-left: 0;
+}
+
+/* Responsive changes */
+@media (max-width: 768px) {
+  .sidebar {
+    left: calc(-1 * var(--sidebar-width));
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+  
+  .sidebar-open .sidebar {
+    left: 0;
+  }
+  
+  .sidebar-open::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+  }
+}

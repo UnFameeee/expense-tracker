@@ -1,0 +1,247 @@
+/* Dashboard overview specific styles */
+
+/* CSS cho cu00e2n u0111u1ed1i thu chi */
+.balance-card {
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.balance-positive {
+  background-color: #e6fcf3;
+}
+
+.balance-negative {
+  background-color: #ffebee;
+}
+
+.balance-title {
+  font-weight: 500;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.balance-amount {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.balance-positive .balance-amount {
+  color: #28a745;
+}
+
+.balance-negative .balance-amount {
+  color: #e74c3c;
+}
+
+.balance-details {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 0.85rem;
+}
+
+.balance-income, .balance-expense {
+  display: flex;
+  flex-direction: column;
+}
+
+.balance-income-amount {
+  font-weight: 600;
+  color: #28a745;
+}
+
+.balance-expense-amount {
+  font-weight: 600;
+  color: #e74c3c;
+}
+
+.balance-savings {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.balance-savings-rate {
+  font-weight: 600;
+}
+
+/* CSS cho cu00e1c phu1ea7n thu1ed1ng ku00ea */
+.stats-card {
+  height: 100%;
+}
+
+.category-stats {
+  padding: 0;
+  list-style: none;
+  margin: 0;
+}
+
+.category-stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.category-stat-item:last-child {
+  border-bottom: none;
+}
+
+.category-stat-name {
+  display: flex;
+  align-items: center;
+}
+
+.category-stat-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: white;
+  margin-right: 10px;
+}
+
+.category-stat-amount {
+  font-weight: 600;
+}
+
+.category-progress {
+  margin-top: 5px;
+  height: 4px;
+  border-radius: 2px;
+  background-color: #e9ecef;
+  overflow: hidden;
+}
+
+.category-progress-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Budget status */
+.budget-status-card {
+  padding: 0;
+}
+
+.budget-status-list {
+  padding: 0;
+  list-style: none;
+  margin: 0;
+}
+
+.budget-status-item {
+  padding: 15px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.budget-status-item:last-child {
+  border-bottom: none;
+}
+
+.budget-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.budget-status-title {
+  font-weight: 500;
+  margin: 0;
+}
+
+.budget-status-amount {
+  font-weight: 700;
+  color: #495057;
+}
+
+.budget-status-progress {
+  height: 8px;
+  border-radius: 4px;
+  margin: 8px 0;
+  background-color: #e9ecef;
+  overflow: hidden;
+}
+
+.budget-status-bar {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.budget-status-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.budget-status-normal .budget-status-bar {
+  background-color: #72d1a8;
+}
+
+.budget-status-warning .budget-status-bar {
+  background-color: #ffc107;
+}
+
+.budget-status-exceeded .budget-status-bar {
+  background-color: #dc3545;
+}
+
+/* Recent expenses */
+.expense-list {
+  padding: 0;
+  list-style: none;
+  margin: 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.expense-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.expense-item:last-child {
+  border-bottom: none;
+}
+
+.expense-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.expense-name {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.expense-category {
+  font-size: 0.8rem;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+}
+
+.expense-category i {
+  margin-right: 5px;
+  font-size: 0.85rem;
+}
+
+.expense-amount {
+  font-weight: 600;
+  color: #dc3545;
+}
+
+.expense-date {
+  font-size: 0.8rem;
+  color: #6c757d;
+}

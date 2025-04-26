@@ -20,6 +20,7 @@ app.use('/api/auth', require('./routes/api/auth'));
 app.use('/api/categories', require('./routes/api/category'));
 app.use('/api/budgets', require('./routes/api/budget'));
 app.use('/api/incomes', require('./routes/api/income'));
+app.use('/api/notifications', require('./routes/api/notification'));
 
 app.listen(PORT, () => {
   console.log(`Server đang chạy tại http://localhost:${PORT}`);

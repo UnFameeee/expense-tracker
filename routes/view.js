@@ -34,7 +34,7 @@ function renderDashboardLayout(res, view, options = {}) {
       }
       ejs.renderFile(
         path.join(__dirname, '../views', 'dashboard-layout.ejs'),
-        { ...options, body: str, scripts: options.scripts || '' },
+        { ...options, body: str, scripts: options.scripts || '', additionalStyles: options.additionalStyles || '' },
         (err2, html) => {
           if (err2) {
             console.error('Lỗi render dashboard layout:', err2);
@@ -67,7 +67,8 @@ router.get('/dashboard', (req, res) => {
   renderDashboardLayout(res, 'dashboard-overview', { 
     title: 'Tổng quan', 
     user: { username: 'user' }, // This will be replaced by actual user from JWT
-    activePage: 'dashboard'
+    activePage: 'dashboard',
+    additionalStyles: '<link rel="stylesheet" href="/css/dashboard-overview.css">'
   });
 });
 
@@ -76,7 +77,8 @@ router.get('/expenses', (req, res) => {
   renderDashboardLayout(res, 'expenses', { 
     title: 'Quản lý chi tiêu', 
     user: { username: 'user' },
-    activePage: 'expenses'
+    activePage: 'expenses',
+    additionalStyles: '<link rel="stylesheet" href="/css/expenses.css">'
   });
 });
 
@@ -85,7 +87,8 @@ router.get('/incomes', (req, res) => {
   renderDashboardLayout(res, 'incomes', { 
     title: 'Quản lý thu nhập', 
     user: { username: 'user' },
-    activePage: 'incomes'
+    activePage: 'incomes',
+    additionalStyles: '<link rel="stylesheet" href="/css/incomes.css">'
   });
 });
 
@@ -103,23 +106,24 @@ router.get('/categories', (req, res) => {
   renderDashboardLayout(res, 'categories', { 
     title: 'Quản lý danh mục', 
     user: { username: 'user' },
-    activePage: 'categories'
+    activePage: 'categories',
+    additionalStyles: '<link rel="stylesheet" href="/css/categories.css">'
   });
 });
 
-// Reports page - Báo cáo thống kê
+// Reports page - Báo cáo
 router.get('/reports', (req, res) => {
   renderDashboardLayout(res, 'reports', { 
-    title: 'Báo cáo thống kê', 
+    title: 'Báo cáo', 
     user: { username: 'user' },
     activePage: 'reports'
   });
 });
 
-// Settings page - Cài đặt tài khoản
+// Settings page - Cài đặt
 router.get('/settings', (req, res) => {
   renderDashboardLayout(res, 'settings', { 
-    title: 'Cài đặt tài khoản', 
+    title: 'Cài đặt', 
     user: { username: 'user' },
     activePage: 'settings'
   });

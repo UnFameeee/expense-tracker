@@ -1,0 +1,76 @@
+/* Main styles for Expense Tracker application */
+
+/* Card styling */
+.card {
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,.05);
+}
+
+/* Form styling */
+.expense-form {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+/* Table styling */
+.table th {
+  font-weight: 600;
+  color: #495057;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.amount {
+  font-weight: 600;
+  color: #dc3545;
+}
+
+/* Modal styling */
+.modal-content {
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 5px 15px rgba(0,0,0,.1);
+}
+
+.modal-header {
+  border-bottom: 1px solid #f1f1f1;
+  background: #f8f9fa;
+  border-radius: 10px 10px 0 0;
+}
+
+.modal-footer {
+  border-top: 1px solid #f1f1f1;
+  background: #f8f9fa;
+  border-radius: 0 0 10px 10px;
+}
+
+/* Button styling */
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+/* Common utilities */
+.text-small {
+  font-size: 0.875rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+}
+
+/* Progress bar styling */
+.progress {
+  height: 8px;
+  border-radius: 10px;
+  overflow: hidden;
+}

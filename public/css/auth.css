@@ -1,0 +1,120 @@
+/* Authentication pages (login, register) styles */
+
+body {
+  background-color: #f5f7fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.card {
+  border: none;
+  border-radius: 10px !important;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-header {
+  border-radius: 10px 10px 0 0 !important;
+  border-bottom: none;
+}
+
+.card-header h3 {
+  font-weight: 700;
+}
+
+.bg-primary {
+  background: linear-gradient(135deg, #72d1a8 0%, #43e6a0 100%) !important;
+}
+
+.form-control {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.form-control:focus {
+  border-color: #72d1a8;
+  box-shadow: 0 0 0 0.25rem rgba(114, 209, 168, 0.25);
+}
+
+.btn-primary {
+  background-color: #72d1a8;
+  border-color: #72d1a8;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: #43e6a0;
+  border-color: #43e6a0;
+}
+
+.btn-link {
+  color: #72d1a8;
+  text-decoration: none;
+}
+
+.btn-link:hover {
+  color: #43e6a0;
+  text-decoration: underline;
+}
+
+.alert {
+  border-radius: 6px;
+  border: none;
+}
+
+.alert-danger {
+  background-color: #ffebee;
+  color: #e74c3c;
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.divider:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #e0e0e0;
+  z-index: 1;
+}
+
+.divider span {
+  position: relative;
+  z-index: 2;
+  background-color: #fff;
+  padding: 0 15px;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Animation for fade in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-card {
+  animation: fadeIn 0.5s ease forwards;
+}
